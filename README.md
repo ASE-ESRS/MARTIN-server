@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ASE-ESRS/MARTIN-server.svg?branch=master)](https://travis-ci.org/ASE-ESRS/MARTIN-server)
 [![Coverage Status](https://coveralls.io/repos/github/ASE-ESRS/MARTIN-server/badge.svg?branch=master)](https://coveralls.io/github/ASE-ESRS/MARTIN-server?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/33627ab4a3c161412034/maintainability)](https://codeclimate.com/github/ASE-ESRS/MARTIN-server/maintainability)
 
 ## Introduction
 This repository holds the code and documentation for the server-side material developed as part **947G5 Advanced Software Engineering** Task 4.
