@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ASE-ESRS/MARTIN-server/issues"
   },
-  "homepage": "https://github.com/ASE-ESRS/MARTIN-server"
+  "homepage": "https://github.com/ASE-ESRS/MARTIN-server",
+  "dependencies": {
+    "uuid": "^3.1.0"
+  }
 }
