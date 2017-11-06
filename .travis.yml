@@ -1,0 +1,25 @@
+language: node_js
+install:
+- npm install
+script: echo OK
+deploy:
+  provider: lambda
+  access_key_id: "$AWS_ACCESS_KEY_ID"
+  secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+  function_name: test_function_4
+  region: eu-west-2
+  handler_name: HandleLocationUpdate
+  runtime: nodejs6.10
+  publish: true
+  zip: deploy.zip
+  role: "$ROLE"
+  on:
+    all_branches: true
+before_deploy:
+- zip -r deploy.zip index.js package.json node_modules/
+after_deploy:
+- unzip -l deploy.zip
+env:
+  global:
+  - secure: aKrCGp8AQF5IWgBah+kCJlQ5i0/RP+9RC0oxjBxRWxu0Rzsgkagvt/PPFnbsM3Zyez2BV3bvVEdePeyoff+MpcsK+lgR0fPGNL9A4FlSaG0n9ccbi+4aET5SN4k5X/s7Yer0boaDGH2LyR5RNAoeB2Jg3jnH2sXdUjvQ6Y+QV9tl1iBzRqwtKeK4PNbHxLoKNB0P97tS7Eh7N94SLPD4EkzaWO0xRc9S86h9Z2sL9xNdyn/hPuv0aidA4RXI3PdvxPQiix+7txYoTdOUziCeFLpLsaSMGGdrcqCLKsAgHyqLOi1PUH3uP5sZt35pbriurJyn/7dwq/bkHbNecoRCUgMZaPqS9L0gRgMM6oWErK9IEVYev8YY7LYQ6g5kXUmH8yttDjN65/5IFWDsIVc13/nXLGlp++f4ayDLjArgiI1GGWJxhFaIfjmj1A0hu/ldhMyAeZLKSFdrirQyCpyFVXx68FMICouSOu8nASRmtwSCbRHkIovQDx8zowZjk3YZd0DrIrVtYETIgEa/I0cn/cWCOp89HvMlzPrt3sBi5tuevZDv6mZl1+xRecgABIxuYfHexz1ok7aMVAth9oqIJzUAGxBAK/0t+RBYtdjORNFUulf97yLRDYosMGsw7eQub9TcGngroutKlvKl0Gl3vdmvPJ5NvB2Ev/GiOJ3Ityg=
+  - secure: DzRc0J0g+Pvvq3YFzxXj6XaVSc7BDytPtb6srCvdPlqU6wbYcDFHwwgHZMUbZEC3YdrKLhueE4yrAc5tF0MNuGrzJ0fBav95Q5Fa3GjhUEH4fDeLwR1s+vMwyuVPCyreKWnq1kWkvB7qRjw+WPMz9PoUL7C2ceEVGXjJRQPwgKPyRCQ20Sz+XAST8t/eE57U4szq0jOY/TTWvXSltlS1X/kX2mqpG7MH0K3DXmZ6mUecyMLrY7alCkK5oOkpB5xkVppwImRgHpUFRYbrg8mpE5SFPBr9Ri80xX7t6qUIqL1i/7NqBaXzz5flZXLe1ZrtNizd7iAFbYaqIPeWsDC47jMwfdrE/HxkdgNOQgaNCAWfT3jBxG0D35f7YyQVtmKyhP/mSnHQ58Jwyuu0fEUyRav0LE6Vb7oyxSH3m1Wd3qSo2g+tfAIPYTQMtWzi2mqEAvZzB/fFIiG1cYoBBunnlteDbQawDXe4ekNB//FbigVvh12n+L6s5rwKGHKQNwt8nvGjREiWGtbHculZ8ED5gkZWIFCOg+0HJFbCrowhDTiQDapiw6Aw37sGYyXXuvQX/XLJtFQaTsioHIkv4+TfUjCd93GQGXH8ULFMnB/FEd+yoWNVHcYrmg27v0IXbHQQH+QCwQV0h6Sae79mZlOeamTPfyfJ62xecEuAG70Zg9U=

@@ -1,0 +1,20 @@
+{
+  "name": "MARTIN-server",
+  "version": "1.0.0",
+  "description": "The Lambda function used for the Server-side of MARTIN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ASE-ESRS/MARTIN-server.git"
+  },
+  "keywords": [],
+  "author": "ASE (Group ESRS)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ASE-ESRS/MARTIN-server/issues"
+  },
+  "homepage": "https://github.com/ASE-ESRS/MARTIN-server"
+}
