@@ -1,7 +1,12 @@
 language: node_js
+node_js:
+- "stable"
 install:
 - npm install
-script: echo OK
+script:
+- npm run test
+after_success:
+- npm run coveralls
 deploy:
   provider: lambda
   access_key_id: "$AWS_ACCESS_KEY_ID"
