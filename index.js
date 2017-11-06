@@ -103,6 +103,3 @@ function longLatReg(l){
     var regExp = /(\-?\d+(\.\d+)?)/;
     return regExp.test(l);
 }
-
-
-// This is an example line to test Travis Build. TEST #1
