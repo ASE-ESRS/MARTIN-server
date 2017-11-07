@@ -13,7 +13,7 @@ deploy:
   secret_access_key: "$AWS_SECRET_ACCESS_KEY"
   function_name: HandleLocationUpdate
   region: eu-west-2
-  handler_name: exports.handler
+  handler_name: index.handler
   runtime: nodejs6.10
   publish: true
   zip: deploy.zip
