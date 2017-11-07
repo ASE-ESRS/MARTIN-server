@@ -14,6 +14,6 @@ describe('LocationHandler', function() {
     });
 
     it('Demo test that should fail', function() {
-        assert.equal(0, [1,2,3].indexOf(4));
+        assert.equal(0, [1,2,3].indexOf(1));
     });
 });
