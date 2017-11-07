@@ -25,28 +25,15 @@ let k_TABLE_NAME = "locations";
 
 exports.handler = (event, context, callback) => {
     // Carry out input validation on the request's parameters.
-
-    // Extract the userId parameter.
-    let userIdInput = event.queryStringParameters.userId;
-    if (!(hexReg(userIdInput))){
-        abortLocationUpdate("Invalid user ID", callback);
+    let validationVar = eventValidation(event);
+    if(validationVar[0]){
+        let userIdInput = validationVar[1];
+        let latitudeInput = validationVar[2];
+        let longitudeInput = validationVar[3];
+    } else {
+        abortLocationUpdate("Error with input validation", callback);
     }
-
-    // Extract the `latitude` parameter and validate.
-    let latitudeInput = event.queryStringParameters.latitude;
-    if(!(longLatReg(latitudeInput))) {
-        abortLocationUpdate("Invalid latitude parameter", callback);
-    }
-
-    // Extract the `longitude` parameter and validate.
-    let longitudeInput = event.queryStringParameters.longitude;
-    if(!(longLatReg(longitudeInput))) {
-        abortLocationUpdate("Invalid longitude parameter", callback);
-    }
-
-    // ----------------------------------------------------------------------
     // At this point, we assume that the input is valid and correctly formed.
-    // ----------------------------------------------------------------------
 
     // Make a note of the current time.
     let currentDateTime = new Date().toISOString();
@@ -89,6 +76,38 @@ function abortLocationUpdate(reason, callback) {
             "message" : reason
         })
     });
+}
+
+// This is a function to perform input validation on the inputs in event.
+function eventValidation(e){
+  
+    let event = e;
+    let userIdInput = event.queryStringParameters.userId;
+    let latitudeInput = event.queryStringParameters.latitude;
+    let longitudeInput = event.queryStringParameters.longitude;
+
+    if (!(userIdInput === null || latitudeInput === null || longitudeInput === null)) {
+        // Extract the userId parameter and validate.  
+        if (!(hexReg(userIdInput))){
+            abortLocationUpdate("Invalid user ID", callback);
+        }
+        
+        // Extract the `latitude` parameter and validate.       
+        if(!(longLatReg(latitudeInput))) {
+            abortLocationUpdate("Invalid latitude parameter", callback);
+        }
+        
+        // Extract the `longitude` parameter and validate.
+        if(!(longLatReg(longitudeInput))) {
+            abortLocationUpdate("Invalid longitude parameter", callback);
+        }
+
+        // If here the validation was a success *Martin Cheers*
+        return [true, userIdInput, latitudeInput, longitudeInput]
+
+    } else {
+        abortLocationUpdate("Null value at input", callback);
+    }
 }
 
 // this is a function to check for a hexidecimal value and a length of 64 characters.
