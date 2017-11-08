@@ -24,42 +24,27 @@ let k_TABLE_NAME = "locations";
 // To print a log in the console use -> console.log('value1 =', event.key1);
 
 exports.handler = (event, context, callback) => {
-    // Carry out input validation on the request's parameters.
+    let validatedInput = validateInput(event);
 
-    // Extract the userId parameter.
-    let userIdInput = event.queryStringParameters.userId;
-    if (!(hexReg(userIdInput))){
-        abortLocationUpdate("Invalid user ID", callback);
-    }
-
-    // Extract the `latitude` parameter and validate.
-    let latitudeInput = event.queryStringParameters.latitude;
-    if(!(longLatReg(latitudeInput))) {
-        abortLocationUpdate("Invalid latitude parameter", callback);
-    }
-
-    // Extract the `longitude` parameter and validate.
-    let longitudeInput = event.queryStringParameters.longitude;
-    if(!(longLatReg(longitudeInput))) {
-        abortLocationUpdate("Invalid longitude parameter", callback);
-    }
-
-    // ----------------------------------------------------------------------
-    // At this point, we assume that the input is valid and correctly formed.
-    // ----------------------------------------------------------------------
+    // Input validation has failed (and been reported via the callback), so just abort.
+    if (validatedInput == false) { return }
 
     // Make a note of the current time.
     let currentDateTime = new Date().toISOString();
 
     // Create the new location entry item.
     var locationItem = {
-        userId      : userIdInput,
+        userId      : validatedInput.userId,
         date        : currentDateTime,
-        latitude    : latitudeInput,
-        longitude   : longitudeInput
+        latitude    : validatedInput.latitude,
+        longitude   : validatedInput.longitude
     };
 
-    // Insert a new record into the `locations` DynamoDB table.
+    saveLocationItem(locationItem);
+};
+
+// Saves the supplied location update in the DynamoDB table.
+function saveLocationItem(locationItem) {
     dynamodb.putItem({
         "TableName" : k_TABLE_NAME,
         "Item" : locationItem
@@ -77,10 +62,86 @@ exports.handler = (event, context, callback) => {
             });
         }
     });
-};
+}
 
-// This function simply reports an error back to the client.
-function abortLocationUpdate(reason, callback) {
+/*
+██ ███    ██ ██████  ██    ██ ████████     ██    ██  █████  ██      ██ ██████   █████  ████████ ██  ██████  ███    ██
+██ ████   ██ ██   ██ ██    ██    ██        ██    ██ ██   ██ ██      ██ ██   ██ ██   ██    ██    ██ ██    ██ ████   ██
+██ ██ ██  ██ ██████  ██    ██    ██        ██    ██ ███████ ██      ██ ██   ██ ███████    ██    ██ ██    ██ ██ ██  ██
+██ ██  ██ ██ ██      ██    ██    ██         ██  ██  ██   ██ ██      ██ ██   ██ ██   ██    ██    ██ ██    ██ ██  ██ ██
+██ ██   ████ ██       ██████     ██          ████   ██   ██ ███████ ██ ██████  ██   ██    ██    ██  ██████  ██   ████
+*/
+
+// This is a function to perform input validation on the inputs from event.
+function validateInput(event) {
+    let userIdInput = event.queryStringParameters.userId;
+    let latitudeInput = event.queryStringParameters.latitude;
+    let longitudeInput = event.queryStringParameters.longitude;
+
+    if (userIdValid(userIdInput) == false) { return false }
+    if (latitudeIsValid(latitudeInput) == false) {
+        abortLocationUpdate("Invalid latitude parameter supplied.", callback);
+        return false;
+    }
+    if (longitudeIsValid(longitudeInput) == false) {
+        abortLocationUpdate("Invalid longitude parameter supplied.", callback);
+        return false;
+    }
+
+    let validInput = {
+        userId      : userIdInput,
+        latitude    : latitudeInput,
+        longitude   : longitudeInput
+    };
+
+    return validInput;
+}
+
+// Ensures a hexidecimal parameter with a length of 16 characters is supplied.
+function userIdValid(userIdParameter) {
+    // Guard against empty parameters.
+    if (userIdParameter === null) {
+        abortLocationUpdate("No userId parameter supplied.", callback);
+        return false;
+    }
+
+    // Make sure it's valid according to the following regular expression.
+    if (userIdRegExValid(userIdParameter) == false) {
+        return false;
+    }
+
+    // Otherwise, the UserId is valid.
+    return true;
+}
+
+// Ensures that the userId input is valid according to the regular expression.
+function userIdRegExValid(userIdParameter) {
+    var regEx = /[0-9A-Fa-f]{16}/g;
+    return regEx.text(userIdParameter);
+}
+
+function latitudeLongitudeIsValid(latLongParameter, longLatEnumType) {
+    // Guard against empty parameters.
+    if (latLongParameter === null) {
+        return false;
+    }
+
+    if (longLatRegExValid(latLongParameter) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+// Ensures that the longitude/latitude input is valid according to the regular expression.
+function longLatRegExValid(l) {
+    // Regex for latitude and longitude.
+    var regEx = /(\-?\d+(\.\d+)?)/;
+    return regEx.test(l);
+}
+
+// This function reports an error back to the client.
+function reportLocationUpdateError(reason, callback) {
     callback(null, {
         "statusCode" : 200,
         "headers" : { "Content-Type" : "application/json" },
@@ -89,17 +150,4 @@ function abortLocationUpdate(reason, callback) {
             "message" : reason
         })
     });
-}
-
-// this is a function to check for a hexidecimal value and a length of 64 characters.
-function hexReg(s) {
-    var regExp = /[0-9A-Fa-f]{16}/g;
-    return (regExp.test(s));
-}
-
-// this function checks the latitude and lonitude follow the correct format.
-function longLatReg(l){
-    // regex for latitude and longitude.
-    var regExp = /(\-?\d+(\.\d+)?)/;
-    return regExp.test(l);
 }
