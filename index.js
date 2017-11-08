@@ -78,9 +78,15 @@ function validateInput(event) {
     let latitudeInput = event.queryStringParameters.latitude;
     let longitudeInput = event.queryStringParameters.longitude;
 
-    if (userIdValid(userIdInput) == false) { return }
-    if (latitudeIsValid(latitudeInput) == false) { return }
-    if (longitudeIsValid(longitudeInput) == false) { return }
+    if (userIdValid(userIdInput) == false) { return false }
+    if (latitudeIsValid(latitudeInput) == false) {
+        abortLocationUpdate("Invalid latitude parameter supplied.", callback);
+        return false;
+    }
+    if (longitudeIsValid(longitudeInput) == false) {
+        abortLocationUpdate("Invalid longitude parameter supplied.", callback);
+        return false;
+    }
 
     let validInput = {
         userId      : userIdInput,
@@ -100,9 +106,7 @@ function userIdValid(userIdParameter) {
     }
 
     // Make sure it's valid according to the following regular expression.
-    var regEx = /[0-9A-Fa-f]{16}/g;
-    if (regEx.test(userIdParameter) == false) {
-        abortLocationUpdate("Invalid userId parameter supplied.", callback);
+    if (userIdRegExValid(userIdParameter) == false) {
         return false;
     }
 
@@ -110,30 +114,19 @@ function userIdValid(userIdParameter) {
     return true;
 }
 
-function longitudeIsValid(longitudeParameter) {
-    // Guard against empty parameters.
-    if (longitudeParameter === null) {
-        abortLocationUpdate("No longitude parameter supplied.", callback);
-        return false;
-    }
-
-    if (longLatRegExValid(longitudeParameter) == false) {
-        abortLocationUpdate("Invalid longitude parameter supplied.", callback);
-        return false;
-    }
-
-    return true;
+// Ensures that the userId input is valid according to the regular expression.
+function userIdRegExValid(userIdParameter) {
+    var regEx = /[0-9A-Fa-f]{16}/g;
+    return regEx.text(userIdParameter);
 }
 
-function latitudeIsValid(latitudeParameter) {
+function latitudeLongitudeIsValid(latLongParameter, longLatEnumType) {
     // Guard against empty parameters.
-    if (latitudeParameter === null) {
-        abortLocationUpdate("No latitude parameter supplied.", callback);
+    if (latLongParameter === null) {
         return false;
     }
 
-    if (longLatRegExValid(latitudeParameter) == false) {
-        abortLocationUpdate("Invalid latitude parameter supplied.", callback);
+    if (longLatRegExValid(latLongParameter) == false) {
         return false;
     }
 
