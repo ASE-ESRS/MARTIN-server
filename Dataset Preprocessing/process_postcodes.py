@@ -5,14 +5,14 @@ from multiprocessing.pool import ThreadPool as Pool
 
 csvWriteLock = threading.Lock()
 
-print 'Opening InputDataset.csv'
-inputDataset = open('MonthlyInputDataset.csv', 'r')
+print 'Data/Opening InputDataset.csv'
+inputDataset = open('Data/MonthlyInputDataset.csv', 'r')
 reader = csv.reader(inputDataset)
 
-numberOfEntries = int(os.popen('wc -l < MonthlyInputDataset.csv').read()[:-1])
+numberOfEntries = int(os.popen('wc -l < Data/MonthlyInputDataset.csv').read()[:-1])
 
 print 'Opening OutputDataset.csv\n'
-outputDataset = open('OutputDataset.csv', 'w')
+outputDataset = open('Data/OutputDataset.csv', 'w')
 writer = csv.writer(outputDataset, delimiter=',')
 
 # Counters to track progress.
@@ -95,9 +95,9 @@ previousReport = 0
 # Reports (prints) the current progress to the user every 10%.
 def reportProgressIfRequired():
     global previousReport
-    currentProgress = int(100 * round(processedCount / numberOfEntries))
-    if currentProgress > previousReport:
-        print "CURRENT PROGRESS:", currentProgress
+    currentProgress = int(round(100 * processedCount / numberOfEntries))
+    if currentProgress > previousReport + 5:
+        print currentProgress, "%"
         previousReport = currentProgress
 
 startTime = time.time()
