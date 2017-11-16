@@ -11,6 +11,10 @@ This repository holds the code and documentation for the server-side material de
 
 The AWS [Lambda Management Console](https://eu-west-2.console.aws.amazon.com/lambda/home?region=eu-west-2#/functions/HandleLocationUpdate?tab=configuration) hosts the **JavaScript** code that powers the server-side of the project.
 
+The deprecated [codebase](https://github.com/ASE-ESRS/Group-Project) previously both the client-side _and_ server-side code. The repositories have been split into the two distinct projects (this, and the [MARTIN-client repo](https://github.com/ASE-ESRS/MARTIN-client)) as they are conceptually separate developments. Splitting the repositories also aided the use of Travis CI (discussed below).
+
+Code is 'owned' jointly by the 'project'. [`git-blame`](https://git-scm.com/docs/git-blame) will be used to determine the author of code.
+
 Entries are made in the `locations` [DynamoDB table](https://eu-west-2.console.aws.amazon.com/dynamodb/home?region=eu-west-2#tables:selected=locations).
 
 #### Why AWS?
@@ -42,6 +46,8 @@ This project uses [Travis CI](https://travis-ci.org) as a continuous integration
 ###### Unit Testing
 
 As mentioned above, Travis CI automatically performs all unit tests on `index.js` when a commit is made to the master branch of the repo or when a pull request is opened. All unit tests are listed in `test.js`. As unit testing is not a core JavaScript concept, we use the [Mocha](https://mochajs.org/) framework to write unit tests. If any of the unit tests fail, the Travis CI build will fail, alerting the team that an issue needs to be fixed (and that the Pull Request that did not build should not be merged.)
+
+Functions (e.g. that verify latitude/longitude inputs) have been abstracted into their own 'self-containing', modular methods to reduce dependencies and simplify testing.
 
 ###### User Testing
 
