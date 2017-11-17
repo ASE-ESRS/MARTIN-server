@@ -6,7 +6,7 @@ from multiprocessing.pool import ThreadPool as Pool
 # This prevents multiple threads from intefering with oneanother while writing.
 csvWriteLock = threading.Lock()
 
-print 'Data/Opening InputDataset.csv'
+print 'Opening InputDataset.csv'
 inputDataset = open('Data/InputDataset.csv', 'r')
 reader = csv.reader(inputDataset)
 
@@ -98,7 +98,7 @@ previousReport = 0
 def reportProgressIfRequired():
     global previousReport
     currentProgress = int(round(100 * processedCount / numberOfEntries))
-    if currentProgress >= previousReport + 5:
+    if currentProgress >= previousReport + 1:
         print currentProgress, "%"
         previousReport = currentProgress
 
