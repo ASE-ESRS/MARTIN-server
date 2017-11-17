@@ -12,6 +12,7 @@ var dynamodb = new doc.DynamoDB();
 let k_TABLE_NAME = "price_paid_data";
 
 // This function is called when the Lambda function is invoked.
+// The function is invoked for each batch.
 exports.handler = (event, context, callback) => {
     let jsonPayload = JSON.parse(event.body);
     let entries = jsonPayload.entries;
@@ -38,7 +39,15 @@ exports.handler = (event, context, callback) => {
 // Saves the specified item to DynamoDB.
 // If this is the last entry, the callback is used to return control to the client.
 function saveItem(itemToSave, isLastEntry, callback) {
-    // TODO: Check whether an entry for this postcode is already in the DB.
+    // Check whether an entry for this postcode is already in the DB.
+    // If it is, then only update the value if this item has a newer dateTime.
+    // dynamodb.getItem({
+    //     TableName   : k_TABLE_NAME,
+    //     Key         : { "postcode" : itemToSave.postcode }
+    // }, function (result) {
+    //     console.log("SEARCH RESULT: " + result);
+    // });
+
     dynamodb.putItem({
         "TableName" : k_TABLE_NAME,
         "Item"      : itemToSave
