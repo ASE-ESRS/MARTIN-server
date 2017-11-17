@@ -14,9 +14,10 @@ let k_TABLE_NAME = "price_paid_data";
 // This function is called when the Lambda function is invoked.
 exports.handler = (event, context, callback) => {
     let jsonPayload = JSON.parse(event.body);
+    let entries = jsonPayload.entries;
 
-    for (var index in jsonPayload.entries) {
-        let entry = jsonPayload.entries[index];
+    for (var index in entries) {
+        let entry = entries[index];
 
         // Create the new price-paid entry item.
         var pricePaidItem = {
@@ -27,21 +28,31 @@ exports.handler = (event, context, callback) => {
             date        : entry.date
         };
 
+        isLastEntry = index == entries.count - 1;
+
         // Insert a new record into the `price_paid_data` DynamoDB table.
-        dynamodb.putItem({
-            "TableName" : k_TABLE_NAME,
-            "Item"      : pricePaidItem
-        }, function (result) {
-            console.log(result);
+        saveItem(pricePaidItem, isLastEntry, callback);
+    }
+};
+
+// Saves the specified item to DynamoDB.
+// If this is the last entry, the callback is used to return control to the client.
+function saveItem(itemToSave, isLastEntry, callback) {
+    // TODO: Check whether an entry for this postcode is already in the DB.
+    dynamodb.putItem({
+        "TableName" : k_TABLE_NAME,
+        "Item"      : itemToSave
+    }, function (result) {
+        console.log(result);
+    });
+
+    if isLastEntry {
+        callback(null, {
+            "statusCode" : 200,
+            "headers" : { "Content-Type" : "application/json" },
+            "body" : JSON.stringify({
+                "status" : "success"
+            })
         });
     }
-
-    callback(null, {
-        "statusCode" : 200,
-        "headers" : { "Content-Type" : "application/json" },
-        "body" : JSON.stringify({
-            "status" : "success",
-            "message" : "Done ✅"
-        })
-    });
-};
+}
