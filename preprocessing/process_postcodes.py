@@ -3,18 +3,11 @@ import requests, json
 import os, time, threading
 from multiprocessing.pool import ThreadPool as Pool
 
-# This prevents multiple threads from intefering with oneanother while writing.
-csvWriteLock = threading.Lock()
-
 print 'Opening InputDataset.csv'
-inputDataset = open('Data/InputDataset.csv', 'r')
+inputDataset = open('Data/MiniDataset.csv', 'r')
 reader = csv.reader(inputDataset)
 
 numberOfEntries = int(os.popen('wc -l < Data/InputDataset.csv').read()[:-1])
-
-print 'Opening OutputDataset.csv\n'
-outputDataset = open('Data/OutputDataset.csv', 'w')
-writer = csv.writer(outputDataset, delimiter=',')
 
 # Counters to track progress.
 batchCount = 0
@@ -47,7 +40,7 @@ def getNextBatch():
     if len(batch) > 0:
         yield dict(batch)
 
-# Responsible for proceessing the supplied batch. Includes making API call and calling writeRows().
+# Responsible for proceessing the supplied batch. Includes making API call and calling writeEntries()).
 def processBatch(batchToProcess):
     # Make an API request to convert these postcodes (this is a blocking call).
     request = requests.post("http://api.postcodes.io/postcodes/", json = {"postcodes" : batchToProcess.keys()})
@@ -58,33 +51,44 @@ def processBatch(batchToProcess):
         print 'ERR: Batch', batchNumber, "response failed"
         return
 
-    rowsToWrite = []
+    entries = []
 
     for result in response["result"]:
         if result["query"] == "" or result["result"] is None:
             # Ignoring empty result.
             continue
 
+        postcode = result["query"]
+
         longitude = result["result"]["longitude"]
         latitude = result["result"]["latitude"]
-        postcode = result["query"]
+
         price = batchToProcess[postcode][0]
         date = batchToProcess[postcode][1]
 
-        rowsToWrite.append([longitude, latitude, postcode, price, date])
+        locationPriceEntry = {
+            'postcode' : postcode,
+            'latitude' : latitude,
+            'longitude' : longitude,
+            'price' : price,
+            'date' : date
+        }
 
-    writeRows(rowsToWrite)
+        entries.append(locationPriceEntry)
 
-# Writes the supplied rows to the output CSV file.
+    writeEntries(entries)
+
+# Make a POST request to update the DynamoDB table.
 # Increments and reports the progress counters.
-def writeRows(rowsToWrite):
-    # Require the lock to write to the CSV.
-    with csvWriteLock:
-        writer.writerows(rowsToWrite)
+def writeEntries(entries):
+    request = requests.post('https://4wmuzhlr5b.execute-api.eu-west-2.amazonaws.com/prod/storeLocationPrice', json = {"entries" : entries})
+    response = request.json()
+
+    print response
 
     # Increment the progress reporting variables.
     global processedCount
-    processedCount += len(rowsToWrite)
+    processedCount += len(entries)
 
     global batchCount
     batchCount += 1
@@ -94,7 +98,7 @@ def writeRows(rowsToWrite):
 # The progress that was last reported (initially 0%).
 previousReport = 0
 
-# Reports (prints) the current progress to the user every ~10%.
+# Reports (prints) the current progress to the user every 1%.
 def reportProgressIfRequired():
     global previousReport
     currentProgress = int(round(100 * processedCount / numberOfEntries))
