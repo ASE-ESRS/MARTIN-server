@@ -143,9 +143,11 @@ function reportLocationUpdateError(reason, callback) {
 module.exports = {
   // Ensures that the userId input is valid according to the regular expression.
   userIdRegExValid: function (userIdParameter) {
-    var regEx = /[0-9A-Fa-f]{16}/g;
+    //var regEx = /[0-9A-Fa-f]{16}/g;
+    var regEx = /^[a-fA-F0-9]{16}$/;
     return regEx.test(userIdParameter);
   },
+
   //Ensures that the longitude/latitude input is valid according to the regular expression.
   longLatRegExValid: function(abcd) {
     var regEx = /(\-?\d+(\.\d+)?)/;

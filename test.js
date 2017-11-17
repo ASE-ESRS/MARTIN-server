@@ -19,7 +19,7 @@ describe('Input validation tests', function() {
       });
       //test fails---------? Fix Regex
       it('UserID test - testing a random 17 character ID', function() {
-        assert.equal(false, myCode.userIdRegExValid("abcdef11111112311119"));
+        assert.equal(false, myCode.userIdRegExValid("abcdef1111111111746"));
       });
 
       it('UserID test - testing a random 16 character ID outside the domain of a-f', function() {
