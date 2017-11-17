@@ -1,7 +1,7 @@
 import csv
 import requests, json
 import os, time, threading
-from multiprocessing.pool import ThreadPool as Pool
+from multiprocessing.dummy import Pool as ThreadPool
 
 print 'Opening InputDataset.csv'
 inputDataset = open('Data/MiniDataset.csv', 'r')
@@ -85,9 +85,6 @@ def processBatch(batchToProcess):
 # Increments and reports the progress counters.
 def writeEntries(entries):
     request = requests.post('https://4wmuzhlr5b.execute-api.eu-west-2.amazonaws.com/prod/storeLocationPrice', json = {"entries" : entries})
-    response = request.json()
-
-    print response
 
     # Increment the progress reporting variables.
     global processedCount
@@ -113,13 +110,12 @@ startTime = time.time()
 
 print 'Processing postcodes...\n'
 
-# We use 4 threads to attempt to aleviate the bottleneck caused by network I/O.
-threads = Pool(processes = 4)
+# We use 8 threads to attempt to aleviate the bottleneck caused by network I/O.
+threads = ThreadPool(processes = 8)
 
 batchGenerator = getNextBatch()
 
-for batch in batchGenerator:
-    threads.map(processBatch, (batch,))
+threads.map(processBatch, batchGenerator)
 
 threads.close()
 threads.join()
