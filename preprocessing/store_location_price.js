@@ -28,7 +28,7 @@ exports.handler = (event, context, callback) => {
             date        : entry.date
         };
 
-        isLastEntry = index == entries.count - 1;
+        isLastEntry = index == entries.length - 1;
 
         // Insert a new record into the `price_paid_data` DynamoDB table.
         saveItem(pricePaidItem, isLastEntry, callback);
@@ -43,16 +43,14 @@ function saveItem(itemToSave, isLastEntry, callback) {
         "TableName" : k_TABLE_NAME,
         "Item"      : itemToSave
     }, function (result) {
-        console.log(result);
+        if (isLastEntry) {
+            callback(null, {
+                "statusCode" : 200,
+                "headers" : { "Content-Type" : "application/json" },
+                "body" : JSON.stringify({
+                    "succeeded" : true
+                })
+            });
+        }
     });
-
-    if (isLastEntry) {
-        callback(null, {
-            "statusCode" : 200,
-            "headers" : { "Content-Type" : "application/json" },
-            "body" : JSON.stringify({
-                "status" : "success"
-            })
-        });
-    }
 }
