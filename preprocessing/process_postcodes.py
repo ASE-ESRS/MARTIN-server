@@ -22,8 +22,11 @@ def getNextBatch():
     for row in reader:
         # Extract the necessary entry information.
         price = row[1]
-        date = row[2]
+        dateTime = row[2]
         postcode = row[3]
+
+        #  Strip time from date.
+        date = dateTime.split(' ')[0];
 
         # Make a dictionary of postcode to price pairings (used to join price back to entry later and for the API call).
         batch[postcode] = (price, date)

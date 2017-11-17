@@ -46,7 +46,7 @@ function saveItem(itemToSave, isLastEntry, callback) {
         console.log(result);
     });
 
-    if isLastEntry {
+    if (isLastEntry) {
         callback(null, {
             "statusCode" : 200,
             "headers" : { "Content-Type" : "application/json" },
