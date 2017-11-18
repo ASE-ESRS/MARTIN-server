@@ -33,10 +33,9 @@ def getNextBatch():
         if batch.get(postcode) == None:
             # Make a dictionary of postcode to price pairings (used to join price back to entry later and for the API call).
             batch[postcode] = (price, date)
-        else:
+        elif dateutil.parser.parse(date) > dateutil.parser.parse(batch[postcode][1]):
             # Otherwise, check whether this one is newer and replace it if it is.
-            if dateutil.parser.parse(date) > dateutil.parser.parse(batch[postcode][1]):
-                batch[postcode] = (price, date)
+            batch[postcode] = (price, date)
 
         # Check whether the batch is maximum size yet (100).
         if len(batch) >= 100:
