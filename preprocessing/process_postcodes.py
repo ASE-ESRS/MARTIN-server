@@ -1,7 +1,7 @@
 import csv
 import requests, json
 import os, time, threading
-from datetime import datetime
+import dateutil.parser
 from multiprocessing.dummy import Pool as ThreadPool
 
 print 'Opening InputDataset.csv'
@@ -35,7 +35,7 @@ def getNextBatch():
             batch[postcode] = (price, date)
         else:
             # Otherwise, check whether this one is newer and replace it if it is.
-            if datetime.strptime(date, "%d/%m/%Y") > datetime.strptime(batch[postcode][1], "%d/%m/%Y"):
+            if dateutil.parser.parse(date) > dateutil.parser.parse(batch[postcode][1]):
                 batch[postcode] = (price, date)
 
         # Check whether the batch is maximum size yet (100).
@@ -109,7 +109,7 @@ previousReport = 0
 def reportProgressIfRequired():
     global previousReport
     currentProgress = int(round(100 * processedCount / numberOfEntries))
-    if currentProgress >= previousReport + 1:
+    if currentProgress >= previousReport + 5:
         print currentProgress, "%"
         previousReport = currentProgress
 
