@@ -26,7 +26,7 @@ exports.handler = (event, context, callback) => {
             longitude   : parseFloat(entry.longitude),
             latitude    : parseFloat(entry.latitude),
             price       : entry.price,
-            date        : entry.date
+            entryDate   : entry.entryDate
         };
 
         isLastEntry = index == entries.length - 1;
@@ -40,26 +40,63 @@ exports.handler = (event, context, callback) => {
 // If this is the last entry, the callback is used to return control to the client.
 function saveItem(itemToSave, isLastEntry, callback) {
     // Check whether an entry for this postcode is already in the DB.
-    // If it is, then only update the value if this item has a newer dateTime.
-    // dynamodb.getItem({
-    //     TableName   : k_TABLE_NAME,
-    //     Key         : { "postcode" : itemToSave.postcode }
-    // }, function (result) {
-    //     console.log("SEARCH RESULT: " + result);
-    // });
+    dynamodb.getItem({
+        TableName   : k_TABLE_NAME,
+        Key         : { postcode : itemToSave.postcode }
+    }, function (error, result) {
+        if (typeof result != 'undefined' && typeof result.Item != 'undefined') {
+            // If it is, then only update the value if this item has a newer dateTime.
+            updateExistingItemIfNecessary(result, itemToSave, isLastEntry, callback);
+        } else {
+            // Otherwise, simply save the entry.
+            putNewItem(itemToSave, isLastEntry, callback);
+        }
+    });
+}
 
+// Saves the item in the database and calls the response function if it's the last one.
+function putNewItem(itemToSave, isLastEntry, callback) {
     dynamodb.putItem({
-        "TableName" : k_TABLE_NAME,
-        "Item"      : itemToSave
+        TableName : k_TABLE_NAME,
+        Item      : itemToSave
     }, function (result) {
         if (isLastEntry) {
-            callback(null, {
-                "statusCode" : 200,
-                "headers" : { "Content-Type" : "application/json" },
-                "body" : JSON.stringify({
-                    "succeeded" : true
-                })
-            });
+            returnResponse(callback);
         }
+    });
+}
+
+// If this entry is newer than the saved one, update it.
+function updateExistingItemIfNecessary(savedItem, itemToSave, isLastEntry, callback) {
+    if (Date.parse(itemToSave.entryDate) > Date.parse(savedItem.Item.entryDate)) {
+        dynamodb.updateItem({
+            TableName           : k_TABLE_NAME,
+            Key                 : { postcode : itemToSave.postcode },
+            UpdateExpression    : "set price = :p, entryDate = :d",
+            ExpressionAttributeValues : {
+                ':p'    :   itemToSave.price,
+                ':d'    :   itemToSave.entryDate
+            },
+            ReturnValues        : "UPDATED_NEW"
+        }, function (result) {
+            if (isLastEntry) {
+                returnResponse(callback);
+            }
+        });
+    } else {
+        if (isLastEntry) {
+            returnResponse(callback);
+        }
+    }
+}
+
+// Responds to the client informing them that the operation was successful.
+function returnResponse(callback) {
+    callback(null, {
+        "statusCode" : 200,
+        "headers" : { "Content-Type" : "application/json" },
+        "body" : JSON.stringify({
+            "succeeded" : true
+        })
     });
 }
