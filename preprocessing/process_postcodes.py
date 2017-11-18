@@ -117,7 +117,7 @@ startTime = time.time()
 print 'Processing postcodes...\n'
 
 # We use 8 threads to attempt to aleviate the bottleneck caused by network I/O.
-threads = ThreadPool(processes = 8)
+threads = ThreadPool(processes = 24)
 
 batchGenerator = getNextBatch()
 
