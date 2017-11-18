@@ -1,13 +1,14 @@
 import csv
 import requests, json
 import os, time, threading
+from datetime import datetime
 from multiprocessing.dummy import Pool as ThreadPool
 
 print 'Opening InputDataset.csv'
-inputDataset = open('Data/MiniDataset.csv', 'r')
+inputDataset = open('data/InputDataset.csv', 'r')
 reader = csv.reader(inputDataset)
 
-numberOfEntries = int(os.popen('wc -l < Data/InputDataset.csv').read()[:-1])
+numberOfEntries = int(os.popen('wc -l < data/InputDataset.csv').read()[:-1])
 
 # Counters to track progress.
 batchCount = 0
@@ -28,8 +29,14 @@ def getNextBatch():
         #  Strip time from date.
         date = dateTime.split(' ')[0];
 
-        # Make a dictionary of postcode to price pairings (used to join price back to entry later and for the API call).
-        batch[postcode] = (price, date)
+        # If an entry for this postcode doesn't exist in the batch already, add it.
+        if batch.get(postcode) == None:
+            # Make a dictionary of postcode to price pairings (used to join price back to entry later and for the API call).
+            batch[postcode] = (price, date)
+        else:
+            # Otherwise, check whether this one is newer and replace it if it is.
+            if datetime.strptime(date, "%d/%m/%Y") > datetime.strptime(batch[postcode][1], "%d/%m/%Y"):
+                batch[postcode] = (price, date)
 
         # Check whether the batch is maximum size yet (100).
         if len(batch) >= 100:
@@ -74,7 +81,7 @@ def processBatch(batchToProcess):
             'latitude' : latitude,
             'longitude' : longitude,
             'price' : price,
-            'date' : date
+            'entryDate' : date
         }
 
         entries.append(locationPriceEntry)
