@@ -52,3 +52,18 @@ Functions (e.g. that verify latitude/longitude inputs) have been abstracted into
 ###### User Testing
 
 Perhaps the most common form of testing we carried out was user testing where the team working on the client-side made requests to the server-side to test the functionality. Specifically, boundary cases were tested to ensure the server-side could deal with them appropriately (reporting an error back to the user), rather than corrupting the database.
+
+## Preprocessing
+
+The [input dataset](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads), a 4 GB CSV file, contains just over 22 million entries of the price paid for properties at various locations around the country. Much of the information in the input dataset is not required.
+
+A Python script (`preprocessing/process_postcodes.py`) has been developed to extract the following (required) information from the input dataset:
+- Postcode.
+- Price paid.
+- Date of purchase.
+
+The client will be requesting 'nearby' datapoints, and so keeping these referenced by their postcodes would be suboptimal, if possible at all. Instead, the [postcodes.io](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads) API was used to convert these postcodes (in batches of 100) to latitude/longitude coordinates.
+
+Following this, the entries are pushed to the `store_location_price.js` Lambda function hosted on AWS to be stored in the `price_paid_data` DynamoDB table. Postcodes are still linked to entries as they are used as primsry keys.
+
+If a duplicate entry for a postcode is discovered, the **most recent** entry is chosen.
