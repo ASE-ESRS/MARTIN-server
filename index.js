@@ -7,8 +7,9 @@
 // This code must be copied over to the AWS Lambda Management Console here:
 // https://eu-west-2.console.aws.amazon.com/lambda/home?region=eu-west-2#/functions/HandleLocationUpdate
 
-var doc = require('dynamodb-doc');
-var dynamodb = new doc.DynamoDB();
+//comment below out if testing with mocha--------------------------------------------
+//var doc = require('dynamodb-doc');
+//var dynamodb = new doc.DynamoDB();
 
 // Name of the locations table in DynamoDB.
 let k_TABLE_NAME = "locations";
@@ -114,12 +115,6 @@ function userIdValid(userIdParameter) {
     return true;
 }
 
-// Ensures that the userId input is valid according to the regular expression.
-function userIdRegExValid(userIdParameter) {
-    var regEx = /[0-9A-Fa-f]{16}/g;
-    return regEx.text(userIdParameter);
-}
-
 function latitudeLongitudeIsValid(latLongParameter, longLatEnumType) {
     // Guard against empty parameters.
     if (latLongParameter === null) {
@@ -133,13 +128,6 @@ function latitudeLongitudeIsValid(latLongParameter, longLatEnumType) {
     return true;
 }
 
-// Ensures that the longitude/latitude input is valid according to the regular expression.
-function longLatRegExValid(l) {
-    // Regex for latitude and longitude.
-    var regEx = /(\-?\d+(\.\d+)?)/;
-    return regEx.test(l);
-}
-
 // This function reports an error back to the client.
 function reportLocationUpdateError(reason, callback) {
     callback(null, {
@@ -151,3 +139,32 @@ function reportLocationUpdateError(reason, callback) {
         })
     });
 }
+
+module.exports = {
+  // Ensures that the userId input is valid according to the regular expression.
+  userIdRegExValid: function (userIdParameter) {
+    //var regEx = /[0-9A-Fa-f]{16}/g;
+    var regEx = /^[a-fA-F0-9]{16}$/;
+    return regEx.test(userIdParameter);
+  },
+
+  //Ensures that the longitude/latitude input is valid according to the regular expression.
+  longLatRegExValid: function(abcd) {
+    var regEx = /(\-?\d+(\.\d+)?)/;
+    return regEx.test(abcd);
+  },
+  //Ensures the latitude is within the domain of -90 degrees to 90 degrees
+  latitudeIsValidSize: function(latitude) {
+    if (latitude <= 90 && latitude >= -90) {
+      return true;
+    }
+    return false;
+  },
+  //Ensures the longitude is within the domain of -180 degrees to 180 degrees
+  longitudeIsValidSize: function(longitude) {
+    if (longitude <= 180 && longitude >= -180) {
+      return true;
+    }
+    return false;
+  }
+};
