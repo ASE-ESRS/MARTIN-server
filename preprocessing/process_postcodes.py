@@ -108,7 +108,7 @@ previousReport = 0
 def reportProgressIfRequired():
     global previousReport
     currentProgress = int(round(100 * processedCount / numberOfEntries))
-    if currentProgress >= previousReport + 5:
+    if currentProgress >= previousReport + 1:
         print currentProgress, "%"
         previousReport = currentProgress
 
@@ -117,7 +117,7 @@ startTime = time.time()
 print 'Processing postcodes...\n'
 
 # We use 8 threads to attempt to aleviate the bottleneck caused by network I/O.
-threads = ThreadPool(processes = 24)
+threads = ThreadPool(processes = 40)
 
 batchGenerator = getNextBatch()
 
