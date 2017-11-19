@@ -11,9 +11,13 @@ This repository holds the code and documentation for the server-side material de
 
 The AWS [Lambda Management Console](https://eu-west-2.console.aws.amazon.com/lambda/home?region=eu-west-2#/functions/HandleLocationUpdate?tab=configuration) hosts the **JavaScript** code that powers the server-side of the project.
 
+The deprecated [codebase](https://github.com/ASE-ESRS/Group-Project) previously both the client-side _and_ server-side code. The repositories have been split into the two distinct projects (this, and the [MARTIN-client repo](https://github.com/ASE-ESRS/MARTIN-client)) as they are conceptually separate developments. Splitting the repositories also aided the use of Travis CI (discussed below).
+
+Code is 'owned' jointly by the 'project'. [`git-blame`](https://git-scm.com/docs/git-blame) will be used to determine the author of code.
+
 Entries are made in the `locations` [DynamoDB table](https://eu-west-2.console.aws.amazon.com/dynamodb/home?region=eu-west-2#tables:selected=locations).
 
-##### Why AWS?
+#### Why AWS?
 
 Amazon Web Services was chosen as the platform to host the server-side of our project because it is very reputable, has very good documentation, and has a suitable 'free' tier.
 
@@ -21,29 +25,29 @@ More specifically, we chose to develop using **AWS Lambda** over, say Elastic Be
 
 Each instance happens in an ad-hoc manner and can operate in a self-contained way, making it extremely scalable (and therefore able to deal with multiple requests at the same time).
 
-##### Why `Node.js`?
+#### Why `Node.js`?
 
 The Lambda Management Console offered a lot of flexibility in terms of which programming language we would like to use. We chose `Node.js` as a number of us are familiar with JavaScript and those who are not felt they could learn it quickly.
 
-##### Why DynamoDB?
+#### Why DynamoDB?
 
 AWS offer DynamoDB as a scalable, fast, and flexible NoSQL database service, which was perfect for our app. DynamoDB is lightweight and simple to use.
-
-> Note: for Task 4 we may not be using DynamoDB anymore.
 
 If we do continue to use it, then we should document why we chose this NoSQL approach over a traditional relational approach.
 
 Also, why did we decide to write to a database rather than, say, text files on the server.
 
-##### Build Automation
+#### Build Automation
 
 This project uses [Travis CI](https://travis-ci.org) as a continuous integration solution that performs all unit tests on the JavaScript code base and then automatically deploys `index.js` and its dependencies (in `node_modules`) to Amazon Web Servers. This enables the team to focus time on writing, testing and reviewing good code instead of ensuring that AWS has the latest version of the source code.
 
-##### Testing
+#### Testing
 
 ###### Unit Testing
 
 As mentioned above, Travis CI automatically performs all unit tests on `index.js` when a commit is made to the master branch of the repo or when a pull request is opened. All unit tests are listed in `test.js`. As unit testing is not a core JavaScript concept, we use the [Mocha](https://mochajs.org/) framework to write unit tests. If any of the unit tests fail, the Travis CI build will fail, alerting the team that an issue needs to be fixed (and that the Pull Request that did not build should not be merged.)
+
+Functions (e.g. that verify latitude/longitude inputs) have been abstracted into their own 'self-containing', modular methods to reduce dependencies and simplify testing.
 
 ###### User Testing
 
