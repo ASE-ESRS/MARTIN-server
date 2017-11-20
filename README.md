@@ -66,4 +66,4 @@ The client will be requesting 'nearby' datapoints, and so keeping these referenc
 
 Following this, the entries are pushed to the `store_location_price.js` Lambda function hosted on AWS to be stored in the `price_paid_data` DynamoDB table. Postcodes are still linked to entries as they are used as primsry keys.
 
-If a duplicate entry for a postcode is discovered, the **most recent** entry is chosen.
+If a duplicate entry for a postcode is discovered, the **most recent** entry is chosen. The elegance of this simple solution is that it allows the script to be re-run at a later date (with a newer dataset, for instance) and any newer entries for a given postcode will overwrite their older counterparts.
