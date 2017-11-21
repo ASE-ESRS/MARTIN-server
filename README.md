@@ -45,11 +45,11 @@ This project uses [Travis CI](https://travis-ci.org) as a continuous integration
 
 ###### Why do we test?
 
-•	Designing test cases gives us the advantage of being able to analyse our given specification from a different angle.
-•	Allows the spread of work over multiple team members; one member is able to write code whilst the other is able to provide test cases for the supplied code. This means the original code is inspected by more than one person giving multiple feedback perspectives.
-•	The software coder of the team would tend to write too many test cases for the features that he understands well and few for unfamiliar functions.
-•	We are able to estimate the quality of the target software early one.
-•	Able to identify about 10% of system bugs when designing test cases – a significant advantage.
+*	Designing test cases gives us the advantage of being able to analyse our given specification from a different angle.
+*	Allows the spread of work over multiple team members; one member is able to write code whilst the other is able to provide test cases for the supplied code. This means the original code is inspected by more than one person giving multiple feedback perspectives.
+*	The software coder of the team would tend to write too many test cases for the features that he understands well and few for unfamiliar functions.
+*	We are able to estimate the quality of the target software early one.
+*	Able to identify about 10% of system bugs when designing test cases – a significant advantage.
 
 ###### Unit Testing
 
@@ -64,17 +64,17 @@ Perhaps the most common form of testing we carried out was user testing where th
 ###### Different tests
 
 Test cases need to be assorted into three categories: 
-  a.	Normal case tests.
-  b.	Abnormal case tests.
-  c.	Boundary case tests.
+  -	Normal case tests.
+  -	Abnormal case tests.
+  -	Boundary case tests.
   
 What? -> Code inspection based upon test failures or slow running rimes.
 Why? -> Checking the test cases for quality and redundancy. 
 How? -> Use the test results to modify poor quality code to increase overall performance.
 
-•	Basic and normal test cases make up 70% of all test cases.
-•	Boundary and limitation test cases make up 15% of all test cases.
-•	Error test cases make up 15% of all test cases.
+*	Basic and normal test cases make up 70% of all test cases.
+*	Boundary and limitation test cases make up 15% of all test cases.
+*	Error test cases make up 15% of all test cases.
 
 ## Preprocessing
 
