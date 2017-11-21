@@ -43,6 +43,14 @@ This project uses [Travis CI](https://travis-ci.org) as a continuous integration
 
 #### Testing
 
+###### Why do we test?
+
+•	Designing test cases gives us the advantage of being able to analyse our given specification from a different angle.
+•	Allows the spread of work over multiple team members; one member is able to write code whilst the other is able to provide test cases for the supplied code. This means the original code is inspected by more than one person giving multiple feedback perspectives.
+•	The software coder of the team would tend to write too many test cases for the features that he understands well and few for unfamiliar functions.
+•	We are able to estimate the quality of the target software early one.
+•	Able to identify about 10% of system bugs when designing test cases – a significant advantage.
+
 ###### Unit Testing
 
 As mentioned above, Travis CI automatically performs all unit tests on `index.js` when a commit is made to the master branch of the repo or when a pull request is opened. All unit tests are listed in `test.js`. As unit testing is not a core JavaScript concept, we use the [Mocha](https://mochajs.org/) framework to write unit tests. If any of the unit tests fail, the Travis CI build will fail, alerting the team that an issue needs to be fixed (and that the Pull Request that did not build should not be merged.)
@@ -52,6 +60,21 @@ Functions (e.g. that verify latitude/longitude inputs) have been abstracted into
 ###### User Testing
 
 Perhaps the most common form of testing we carried out was user testing where the team working on the client-side made requests to the server-side to test the functionality. Specifically, boundary cases were tested to ensure the server-side could deal with them appropriately (reporting an error back to the user), rather than corrupting the database.
+
+###### Different tests
+
+Test cases need to be assorted into three categories: 
+  a.	Normal case tests.
+  b.	Abnormal case tests.
+  c.	Boundary case tests.
+  
+What? -> Code inspection based upon test failures or slow running rimes.
+Why? -> Checking the test cases for quality and redundancy. 
+How? -> Use the test results to modify poor quality code to increase overall performance.
+
+•	Basic and normal test cases make up 70% of all test cases.
+•	Boundary and limitation test cases make up 15% of all test cases.
+•	Error test cases make up 15% of all test cases.
 
 ## Preprocessing
 
