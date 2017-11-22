@@ -6,7 +6,6 @@ exports.handler         = (event, context, callback) => {
     //Carry out input validation 
     let validationVar   = eventValidation(event);
 
-
     // User Inputs returned from validation. 
     if(validationVar[0]){
         let distance    = validationVar[1];
@@ -26,7 +25,7 @@ exports.handler         = (event, context, callback) => {
     var params = getParams(start_lat, end_lat, start_lon, end_lon);
  
     //List of items that will be returned. Needed to account for DynamoDB window size. 
-    var items = []
+    var items = [];
     
     // Accounts for DynamoDB only being able to send a set window at a time, scans whole DB. 
     var scanExecute = function(callback) {
@@ -122,4 +121,11 @@ function getParams(start_lat, end_lat, start_lon, end_lon){
         }
     };
     return params
+}
+
+// this function checks the latitude and lonitude follow the correct format.
+function longLatReg(l){
+    // regex for latitude and longitude.
+    var regExp = /(\-?\d+(\.\d+)?)/;
+    return regExp.test(l);
 }
