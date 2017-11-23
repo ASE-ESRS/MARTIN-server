@@ -70,6 +70,10 @@ describe('Input validation tests', function() {
       it('Latitude value is within range test - check for string input', function() {
         assert.equal(true, myCode.checkLatRange("9.754"));
       });
+
+      it('Latitude value is NOT within range test - check for out of bounds case', function() {
+        assert.equal(false, myCode.checkLatRange(207.81));
+      });
     });
 
     describe('Validate longitude conforms to normal convention', function(){
@@ -91,6 +95,10 @@ describe('Input validation tests', function() {
 
       it('Longitude value is within range test - check for string input', function() {
         assert.equal(true, myCode.checkLongRange("91.075"));
+      });
+
+      it('Longitude value is NOT within range test - check for out of bounds case', function() {
+        assert.equal(false, myCode.checkLatRange(-196.856));
       });
     });
 });
