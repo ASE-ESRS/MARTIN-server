@@ -7,6 +7,7 @@ Travis CI runs all of the tests in the /tests directory when building.
 */
 
 var assert = require('assert');
+var chai = require('chai');
 var myCode = require('./index');
 
 describe('Input validation tests', function() {
@@ -67,29 +68,29 @@ describe('Input validation tests', function() {
       });
 
       it('Latitude value is within range test - check for string input', function() {
-        assert.equal(false, myCode.latitudeIsValidSize("hello world"));
+        assert.equal(true, myCode.latitudeIsValidSize("9.754"));
       });
     });
 
     describe('Validate longitude conforms to normal convention', function(){
       it('Longitude value is within range test - check boundary case (positive)', function() {
-        assert.equal(true, myCode.longLatRegExValid(180.000000));
+        assert.equal(true, myCode.longitudeIsValidSize(180.000000));
       });
 
       it('Longitude value is within range test - check boundary case (negative)', function() {
-        assert.equal(true, myCode.longLatRegExValid(-180.000000));
+        assert.equal(true, myCode.longitudeIsValidSize(-180.000000));
       });
 
       it('Longitude value is within range test - check boundary case (zero)', function() {
-        assert.equal(true, myCode.longLatRegExValid(0));
+        assert.equal(true, myCode.longitudeIsValidSize(0));
       });
 
       it('Longitude value is within range test - check normal case', function() {
-        assert.equal(true, myCode.longLatRegExValid(-87.647352));
+        assert.equal(true, myCode.longitudeIsValidSize(-87.647352));
       });
 
       it('Longitude value is within range test - check for string input', function() {
-        assert.equal(false, myCode.longLatRegExValid("hello world"));
+        assert.equal(true, myCode.longitudeIsValidSize("91.075"));
       });
     });
 });
