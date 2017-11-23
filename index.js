@@ -148,6 +148,7 @@ exports.handler = (event, context, callback) => {
       if (latitude <= 90 && latitude >= -90) {
         return true;
       }
+      return false;
     }
 
     //Ensures the longitude is within the domain of -180 degrees to 180 degrees
@@ -155,4 +156,5 @@ exports.handler = (event, context, callback) => {
       if (longitude <= 180 && longitude >= -180) {
         return true;
       }
+      return false;
     }
