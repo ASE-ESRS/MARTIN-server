@@ -98,7 +98,7 @@ exports.handler = (event, context, callback) => {
     }
 
     // This is a function to perform input validation on the inputs in event.
-    function eventValidation(e){
+    exports.eventValidation = function(e){
 
         let event = e;
         var latitude = parseFloat(event.queryStringParameters.latitude);
@@ -158,3 +158,5 @@ exports.handler = (event, context, callback) => {
       }
       return false;
     }
+
+
