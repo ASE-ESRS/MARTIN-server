@@ -82,12 +82,12 @@ function eventValidation(e){
         }
         
         // Extract the `latitude` parameter and validate.       
-        if(!(longLatReg(latitudeInput))) {
+        if(!(longLatRegExValid(latitudeInput))) {
             abortLocationUpdate("Invalid latitude parameter", callback);
         }
         
         // Extract the `longitude` parameter and validate.
-        if(!(longLatReg(longitudeInput))) {
+        if(!(longLatRegExValid(longitudeInput))) {
             abortLocationUpdate("Invalid longitude parameter", callback);
         }
 
@@ -123,9 +123,31 @@ function getParams(start_lat, end_lat, start_lon, end_lon){
     return params
 }
 
-// this function checks the latitude and lonitude follow the correct format.
-function longLatReg(l){
-    // regex for latitude and longitude.
-    var regExp = /(\-?\d+(\.\d+)?)/;
-    return regExp.test(l);
-}
+module.exports = {
+  // Ensures that the userId input is valid according to the regular expression.
+  userIdRegExValid: function (userIdParameter) {
+    //var regEx = /[0-9A-Fa-f]{16}/g;
+    var regEx = /^[a-fA-F0-9]{16}$/;
+    return regEx.test(userIdParameter);
+  },
+
+  //Ensures that the longitude/latitude input is valid according to the regular expression.
+  longLatRegExValid: function(abcd) {
+    var regEx = /(\-?\d+(\.\d+)?)/;
+    return regEx.test(abcd);
+  },
+  //Ensures the latitude is within the domain of -90 degrees to 90 degrees
+  latitudeIsValidSize: function(latitude) {
+    if (latitude <= 90 && latitude >= -90) {
+      return true;
+    }
+    return false;
+  },
+  //Ensures the longitude is within the domain of -180 degrees to 180 degrees
+  longitudeIsValidSize: function(longitude) {
+    if (longitude <= 180 && longitude >= -180) {
+      return true;
+    }
+    return false;
+  }
+};
