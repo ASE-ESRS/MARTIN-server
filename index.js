@@ -7,7 +7,7 @@ exports.handler = (event, context, callback) => {
     // var latitude = parseFloat(event.queryStringParameters.latitude);
     // var longitude = parseFloat(event.queryStringParameters.longitude);
     // var distance = parseInt(event.queryStringParameters.distance);
-    
+
     let validationVar   = eventValidation(event);
     let distance    = validationVar[1];
     let latitude    = validationVar[2];
@@ -84,7 +84,7 @@ exports.handler = (event, context, callback) => {
             });
         }
     };
-   
+
     // This function simply reports an error back to the client.
     function abortLocationUpdate(reason, callback) {
         callback(null, {
@@ -96,52 +96,63 @@ exports.handler = (event, context, callback) => {
             })
         });
     }
-    
+
     // This is a function to perform input validation on the inputs in event.
-    function eventValidation(e){
-      
+    eventValidation = function(e){
+
         let event = e;
         var latitude = parseFloat(event.queryStringParameters.latitude);
         var longitude = parseFloat(event.queryStringParameters.longitude);
         var distance = parseInt(event.queryStringParameters.distance);
-    
+
         if (!(distance === null || latitude === null || longitude === null)) {
-    
-            // Extract the userId parameter and validate.  
+
+            // Extract the userId parameter and validate.
             if (!(Number.isInteger(distance))){
                 abortLocationUpdate("Invalid distance", callback);
             }
-            
-            // Extract the `latitude` parameter and validate.       
-            if(!(longLatReg(latitude))) {
+
+            // Extract the `latitude` parameter and validate.
+            if(!(longLatReg(latitude)) && !(checkLatRange(latitude))) {
                 abortLocationUpdate("Invalid latitude parameter", callback);
             }
-            
+
             // Extract the `longitude` parameter and validate.
-            if(!(longLatReg(longitude))) {
+            if(!(longLatReg(longitude)) && !(checkLongRange(longitude))) {
                 abortLocationUpdate("Invalid longitude parameter", callback);
             }
-    
+
             // If here, the validation was a success. *Martin Cheers*
             return [true, distance, latitude, longitude];
-    
+
         } else {
             abortLocationUpdate("Null value at input", callback);
         }
     }
-    
+
     // this is a function to check for a hexidecimal value and a length of 64 characters.
-    function hexReg(s) {
+    exports.hexReg = function(s) {
         var regExp = /[0-9A-Fa-f]{16}/g;
         return (regExp.test(s));
     }
-    
+
     // this function checks the latitude and lonitude follow the correct format.
-    function longLatReg(l){
+    exports.longLatReg = function(regex){
         // regex for latitude and longitude.
         var regExp = /(\-?\d+(\.\d+)?)/;
-        return regExp.test(l);
-   
- }
+        return regExp.test(regex);
+    }
 
+    //Ensures the latitude is within the domain of -90 degrees to 90 degrees
+    exports.checkLatRange = function(latitude) {
+      if (latitude <= 90 && latitude >= -90) {
+        return true;
+      }
+    }
 
+    //Ensures the longitude is within the domain of -180 degrees to 180 degrees
+    exports.checkLongRange = function(longitude) {
+      if (longitude <= 180 && longitude >= -180) {
+        return true;
+      }
+    }
