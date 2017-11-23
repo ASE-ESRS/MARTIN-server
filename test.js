@@ -98,7 +98,7 @@ describe('Input validation tests', function() {
       });
 
       it('Longitude value is NOT within range test - check for out of bounds case', function() {
-        assert.equal(false, myCode.checkLatRange(-196.856));
+        assert.equal(false, myCode.checkLongRange(-196.856));
       });
     });
 });
