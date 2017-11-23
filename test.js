@@ -32,6 +32,16 @@ describe('Input validation tests', function() {
     //   });
     // });
 
+
+
+
+    describe("assertions", {
+    'testingEventThing': function() {
+        eventValidation({"queryStringParameters": {"latitude": 50.857185,"longitude": 0.141022,"distance": 2000}}, this.expect([true, 50.857185, 0.141022, 2000]));
+    }
+    });
+
+
     describe('LongLatRegexFunction - check regex is correct', function() {
       it('LongLatRegExFunction test - check positive value', function() {
         assert.equal(true, myCode.longLatReg(50.0));
@@ -101,4 +111,6 @@ describe('Input validation tests', function() {
         assert.equal(false, myCode.checkLatRange(-196.856));
       });
     });
+
+
 });
