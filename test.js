@@ -1,6 +1,5 @@
 /*
 
-There are currently no tests in this directory.
 This project uses the Mocha framework for unit testing.
 Travis CI runs all of the tests in the /tests directory when building.
 
@@ -32,7 +31,7 @@ describe('Input validation tests', function() {
     //   });
     // });
 
-    describe('LongLatRegexFunction - check regex is correct', function() {
+    describe('LongLatRegexFunction', function() {
       it('LongLatRegExFunction test - check positive value', function() {
         assert.equal(true, myCode.longLatReg(50.0));
       });
@@ -41,7 +40,7 @@ describe('Input validation tests', function() {
         assert.equal(true, myCode.longLatReg(-200.983));
       });
 
-      it('LongLatRegExFunction test - 0 is a valid input', function() {
+      it('LongLatRegExFunction test - 0 as a valid input', function() {
         assert.equal(true, myCode.longLatReg(0));
       });
 
@@ -50,7 +49,7 @@ describe('Input validation tests', function() {
       });
     });
 
-    describe('Validate latitude conforms to normal convention', function() {
+    describe('Validate latitude conforms to its standard domain', function() {
       it('Latitude value is within range test - check boundary case (positive)', function() {
         assert.equal(true, myCode.checkLatRange(90.000000));
       });
