@@ -76,6 +76,10 @@ How? -> Use the test results to modify poor quality code to increase overall per
 *	Boundary and limitation test cases make up 15% of all test cases.
 *	Error test cases make up 15% of all test cases.
 
+#### Problems Encountered When Unit Testing
+
+The server-side of MARTIN's map proved challenging to test. Using AWS we found many processes were coupled with dynamo DB's functionalities which mocha/node refused to be able to test. Multiple people researched methods, styles and refactoring options to try and decouple as much of the core methods as possible, but this effort only resulted a max test coverage of 50%.
+
 ## Preprocessing
 
 The [input dataset](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads), a 4 GB CSV file, contains just over 22 million entries of the price paid for properties at various locations around the country. Much of the information in the input dataset is not required.
