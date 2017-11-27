@@ -108,7 +108,7 @@ previousReport = 0
 def reportProgressIfRequired():
     global previousReport
     currentProgress = int(round(100 * processedCount / numberOfEntries))
-    if currentProgress >= previousReport + 1:
+    if currentProgress >= previousReport + 5:
         print currentProgress, "%"
         previousReport = currentProgress
 
