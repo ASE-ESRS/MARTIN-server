@@ -132,7 +132,7 @@ exports.handler = (event, context, callback) => {
 
     // this is a function to check for a hexidecimal value and a length of 64 characters.
     exports.hexReg = function(s) {
-        var regExp = /[0-9A-Fa-f]{15}/g;
+        var regExp = /[0-9A-Fa-f]{16}/g;
         return (regExp.test(s));
     }
 
@@ -145,7 +145,7 @@ exports.handler = (event, context, callback) => {
 
     //Ensures the latitude is within the domain of -90 degrees to 90 degrees
     exports.checkLatRange = function(latitude) {
-      if (latitude <= 90 && latitude >= -90) {
+      if (latitude <= 90 && latitude >= 90) {
         return true;
       }
       return false;
