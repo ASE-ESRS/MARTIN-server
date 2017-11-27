@@ -145,7 +145,7 @@ exports.handler = (event, context, callback) => {
 
     //Ensures the latitude is within the domain of -90 degrees to 90 degrees
     exports.checkLatRange = function(latitude) {
-      if (latitude <= 90 && latitude >= 90) {
+      if (latitude <= 90 && latitude >= -90) {
         return true;
       }
       return false;
