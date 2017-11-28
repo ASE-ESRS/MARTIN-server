@@ -157,7 +157,7 @@ exports.handler = (event, context, callback) => {
       }
       return false;
     }
-
+    
     // this is a function to check for a hexidecimal value and a length of 64 characters.
     exports.hexReg = function(s) {
         var regExp = /[0-9A-Fa-f]{16}/g;
