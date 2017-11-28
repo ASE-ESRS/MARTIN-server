@@ -157,7 +157,7 @@ exports.handler = (event, context, callback) => {
       }
       return false;
     }
-    
+
     // this is a function to check for a hexidecimal value and a length of 64 characters.
     exports.hexReg = function(s) {
         var regExp = /[0-9A-Fa-f]{16}/g;
@@ -181,7 +181,7 @@ exports.handler = (event, context, callback) => {
 
     //Ensures the longitude is within the domain of -180 degrees to 180 degrees
     exports.checkLongRange = function(longitude) {
-      if (longitude <= 180 && longitude >= -180) {
+      if (longitude <= 180 && longitude >= 0) {
         return true;
       }
       return false;
