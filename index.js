@@ -98,8 +98,7 @@ exports.handler = (event, context, callback) => {
     }
 
     // This is a function to perform input validation on the inputs in event.
-    function eventValidation(e){
-
+    function eventValidation(e) {
         let event = e;
         var latitude = parseFloat(event.queryStringParameters.latitude);
         var longitude = parseFloat(event.queryStringParameters.longitude);
@@ -131,20 +130,20 @@ exports.handler = (event, context, callback) => {
     }
 
     // this is a function to check for a hexidecimal value and a length of 64 characters.
-    exports.hexReg = function(s) {
+    module.exports.hexReg = function(s) {
         var regExp = /[0-9A-Fa-f]{16}/g;
         return (regExp.test(s));
     }
 
     // this function checks the latitude and lonitude follow the correct format.
-    exports.longLatReg = function(regex){
+    module.exports.longLatReg = function(regex){
         // regex for latitude and longitude.
         var regExp = /(\-?\d+(\.\d+)?)/;
         return regExp.test(regex);
     }
 
     //Ensures the latitude is within the domain of -90 degrees to 90 degrees
-    exports.checkLatRange = function(latitude) {
+    module.exports.checkLatRange = function(latitude) {
       if (latitude <= 90 && latitude >= -90) {
         return true;
       }
@@ -152,7 +151,7 @@ exports.handler = (event, context, callback) => {
     }
 
     //Ensures the longitude is within the domain of -180 degrees to 180 degrees
-    exports.checkLongRange = function(longitude) {
+    module.exports.checkLongRange = function(longitude) {
       if (longitude <= 180 && longitude >= -180) {
         return true;
       }
