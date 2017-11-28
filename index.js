@@ -130,20 +130,20 @@ exports.handler = (event, context, callback) => {
     }
 
     // this is a function to check for a hexidecimal value and a length of 64 characters.
-    module.exports.hexReg = function(s) {
+    exports.hexReg = function(s) {
         var regExp = /[0-9A-Fa-f]{16}/g;
         return (regExp.test(s));
     }
 
     // this function checks the latitude and lonitude follow the correct format.
-    module.exports.longLatReg = function(regex){
+    exports.longLatReg = function(regex){
         // regex for latitude and longitude.
         var regExp = /(\-?\d+(\.\d+)?)/;
         return regExp.test(regex);
     }
 
     //Ensures the latitude is within the domain of -90 degrees to 90 degrees
-    module.exports.checkLatRange = function(latitude) {
+    exports.checkLatRange = function(latitude) {
       if (latitude <= 90 && latitude >= -90) {
         return true;
       }
