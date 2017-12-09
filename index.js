@@ -1,95 +1,179 @@
+// MARTIN-server
+
+// Get access to DynamoDB.
+var AWS;
+var dynamoDB;
+
+// The callback function is accessed by the `abortLocationUpdate` and `returnResults` methods.
+var handler;
+
 exports.handler = (event, context, callback) => {
-  // Setup
-  var AWS = require("aws-sdk");
-  var docClient = new AWS.DynamoDB.DocumentClient();
+    AWS = require("aws-sdk");
+    dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-  // // User Inputs. - Use this to get working if validation breaks it.
-  // var latitude = parseFloat(event.queryStringParameters.latitude);
-  // var longitude = parseFloat(event.queryStringParameters.longitude);
-  // var distance = parseInt(event.queryStringParameters.distance);
+    handler = callback;
 
-  let validationVar   = eventValidation(event);
-  let distance    = validationVar[1];
-  let latitude    = validationVar[2];
-  let longitude   = validationVar[3];
+    // Validate the input parameters
+    let validatedParameters = extractParametersFromEvent(event);
 
-  // Works out the radius of LAT/LON values to be accepted.
-  var latChange = getRadiusLat(distance);
-  var lonChange = getRadiusLon(distance);
+    let start_latitude = validatedParameters.start_latitude;
+    let end_latitude = validatedParameters.end_latitude;
+    let start_longitude = validatedParameters.start_longitude;
+    let end_longitude = validatedParameters.end_longitude;
 
-  // Works out start positions of both longitude and latitude
-  var start_lat = getStartPos(latitude, latChange);
-  var end_lat = getEndPos(latitude, latChange);
-  var start_lon = getStartPos(longitude, lonChange);
-  var end_lon = getEndPos(longitude, lonChange);
+    // Set up the parameters to use to scan the database.
+    scanParameters = {
+        TableName : "price_paid_data",
 
-  // Works out smallest/biggest point
-  var explf = expFrom(start_lat, end_lat);
-  var explt = expTo(start_lat, end_lat);
-  var explof = expFrom(start_lon, end_lon);
-  var explot = expTo(start_lon, end_lon);
+        // Specify the fields that will be returned.
+        ProjectionExpression : "latitude, longitude, price",
 
-  // Retrieves items from the DB.
-  var params = {
-    TableName:"price_paid_data",
+        // Filter the items to only include datapoints within the appropriate radius.
+        FilterExpression : "latitude BETWEEN :latFrom AND :latTo and longitude BETWEEN :lonFrom AND :lonTo",
 
-    // What fields will be returned.
-    ProjectionExpression: "latitude , longitude, price",
+        ExpressionAttributeValues : {
+            ":latFrom" :  start_latitude,
+            ":latTo"   :  end_latitude,
+            ":lonFrom" :  start_longitude,
+            ":lonTo"   :  end_longitude
+        }
+    };
 
-    // Filter the items to only include LAT/LON within the radius.
-    FilterExpression: "#latitude BETWEEN :latFrom AND :latTo and #longitude BETWEEN :lonFrom AND :lonTo",
-    ExpressionAttributeNames: {
-      "#latitude": "latitude",
-      "#longitude": "longitude"
-    },
-    ExpressionAttributeValues: {
-      ":latFrom" :  explf, //Math.max / Math.min to account for negatice numbers and avoid an error with the between comparison.
-      ":latTo"   :  explt,
-      ":lonFrom" :  explof,
-      ":lonTo"   :  explot
-    }
-  };
+    dynamoDB.scan(scanParameters, scanCompletionHandler);
+};
 
-  //List of items that will be returned. Needed to account for DynamoDB window size.
-  var items = [];
+var scanParameters;
 
-  var stop = false;
+// Stores the intermediate list of items to send back to the client.
+var items = [];
 
-  docClient.scan(params, onScan);
-
-// Accounts for DynamoDB only being able to send a set window at a time, scans whole DB.
-function onScan(err,result) {
-  if(err) {
-    console.log(err);
-    respond({"status" : "error", "message" : "Dynamo DB error: "+err});
-  } else {
-    items = items.concat(result.Items);
-    console.log(JSON.stringify(result));
-
-    if(typeof result.LastEvaluatedKey != "undefined") {
-      params.ExclusiveStartKey = result.LastEvaluatedKey;
-      docClient.scan(params, onScan);
+// This handler is required because DynamoDB is only able to send back a set window at a given time.
+function scanCompletionHandler(error, result) {
+    if (error) {
+        console.log(error);
+        abortLocationUpdate("Dynamo DB error: " + error);
     } else {
-      console.log("Items: " + items);
-      stop = true;
-      //callback(err,items);
-      respond(items);
-      //return;
+        items = items.concat(result.Items);
+
+        if (typeof result.LastEvaluatedKey != "undefined") {
+            scanParameters.ExclusiveStartKey = result.LastEvaluatedKey;
+            dynamoDB.scan(scanParameters, scanCompletionHandler);
+        } else {
+            returnResults(items);
+        }
     }
-  }
 }
 
-function respond(items) {
-    callback(null, {
+// Returns the request's response items in JSON format.
+function returnResults(items) {
+    handler(null, {
         "statusCode" : 200,
         "headers" : { "Content-Type" : "application/json" },
         "body" : JSON.stringify(items)
-        });
+    });
+}
+
+// Extracts parameters from the event and invokes methods to validate them.
+function extractParametersFromEvent(event) {
+    var start_latitude = parseFloat(event.queryStringParameters.start_latitude);
+    var end_latitude = parseFloat(event.queryStringParameters.end_latitude);
+    var start_longitude = parseFloat(event.queryStringParameters.start_longitude);
+    var end_longitude = parseFloat(event.queryStringParameters.end_longitude);
+
+    if (validParameters(start_latitude, end_latitude, start_longitude, end_longitude)) {
+        return {
+            "start_latitude" : start_latitude,
+            "end_latitude" : end_latitude,
+            "start_longitude" : start_longitude,
+            "end_longitude" : end_longitude
+        };
+    }
+}
+
+// Ensures all four input parameters are valid.
+function validParameters(start_latitude, end_latitude, start_longitude, end_longitude) {
+    // Validate the `start_latitude` parameter.
+    if (validLatitude(start_latitude) == false) {
+        abortLocationUpdate("Invalid start_latitude parameter");
+        return false;
+    }
+
+    // Validate the `end_latitude` parameter.
+    if (validLatitude(end_latitude) == false) {
+        abortLocationUpdate("Invalid end_latitude parameter");
+        return false;
+    }
+
+    // Validate the `start_longitude` parameter.
+    if (validLongitude(start_longitude) == false) {
+        abortLocationUpdate("Invalid start_longitude parameter");
+        return false;
+    }
+
+    // Validate the `end_longitude` parameter.
+    if (validLongitude(end_longitude) == false) {
+        abortLocationUpdate("Invalid end_longitude parameter");
+        return false;
+    }
+
+    // If here, the validation was a success 🎉.
+    return true;
+}
+
+// Ensures the supplied coordinate (latitude or longitude) is of the correct form (using a regex).
+function wellFormedLatLong(latLong) {
+    // Regex for a latitude/longitude coordinate.
+    var regex = /(\-?\d+(\.\d+)?)/;
+    return regex.test(latLong);
+}
+
+// Validates the latitude.
+function validLatitude(latitude) {
+    if (latitude == null) {
+        return false;
+    }
+
+    if (wellFormedLatLong(latitude) == false) {
+        return false;
+    }
+
+    if (validLatitudeRange(latitude) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+// Validates the longitude.
+function validLongitude(longitude) {
+    if (longitude == null) {
+        return false;
+    }
+
+    if (wellFormedLatLong(longitude) == false) {
+        return false;
+    }
+
+    if (validLongitudeRange(longitude) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+// Ensures the latitude is within the domain of -90 degrees to 90 degrees.
+function validLatitudeRange(latitude) {
+    return (latitude <= 90 && latitude >= -90);
+}
+
+// Ensures the longitude is within the domain of -180 degrees to 180 degrees.
+function validLongitudeRange(longitude) {
+    return (longitude <= 180 && longitude >= -180);
 }
 
 // This function simply reports an error back to the client.
-function abortLocationUpdate(reason, callback) {
-    callback(null, {
+function abortLocationUpdate(reason) {
+    handler(null, {
         "statusCode" : 200,
         "headers" : { "Content-Type" : "application/json" },
         "body" : JSON.stringify({
@@ -98,218 +182,11 @@ function abortLocationUpdate(reason, callback) {
         })
     });
 }
-}
-// This is a function to perform input validation on the inputs in event.
-function eventValidation(e) {
-    let event = e;
-    var latitude = parseFloat(event.queryStringParameters.latitude);
-    var longitude = parseFloat(event.queryStringParameters.longitude);
-    var distance = parseInt(event.queryStringParameters.distance);
 
-    if (!(distance === null || latitude === null || longitude === null)) {
-
-        // Extract the userId parameter and validate.
-        if (!(Number.isInteger(distance))){
-            abortLocationUpdate("Invalid distance", callback);
-        }
-
-        // Extract the `latitude` parameter and validate.
-        if(!(longLatReg(latitude)) && !(checkLatRange(latitude))) {
-            abortLocationUpdate("Invalid latitude parameter", callback);
-        }
-
-        // Extract the `longitude` parameter and validate.
-        if(!(longLatReg(longitude)) && !(checkLongRange(longitude))) {
-            abortLocationUpdate("Invalid longitude parameter", callback);
-        }
-
-        // If here, the validation was a success. *Martin Cheers*
-        return [true, distance, latitude, longitude];
-
-    } else {
-        abortLocationUpdate("Null value at input", callback);
-    }
-}
-// this is a function to check for a hexidecimal value and a length of 64 characters.
-function hexReg(s) {
-    var regExp = /[0-9A-Fa-f]{16}/g;
-    return (regExp.test(s));
-}
-
-// this function checks the latitude and lonitude follow the correct format.
-function longLatReg(regex) {
-    // regex for latitude and longitude.
-    var regExp = /(\-?\d+(\.\d+)?)/;
-    return regExp.test(regex);
-}
-
-//Ensures the latitude is within the domain of -90 degrees to 90 degrees
-function checkLatRange(latitude) {
-  if (latitude <= 90 && latitude >= -90) {
-    return true;
-  }
-  return false;
-}
-
-//Ensures the longitude is within the domain of -180 degrees to 180 degrees
-function checkLongRange(longitude) {
-  if (longitude <= 180 && longitude >= -180) {
-    return true;
-  } 
-  return false;
-}
-
-// This is a function to perform input validation on the inputs in event.
-function eventValidation(event) {
-
-  var latitude = parseFloat(event.queryStringParameters.latitude);
-  var longitude = parseFloat(event.queryStringParameters.longitude);
-  var distance = parseInt(event.queryStringParameters.distance);
-
-  if (!validateLat(latitude)) {
-    abortLocationUpdate("Invalid latitude parameter", callback);
-  }
-
-  if (!validateLon(longitude)) {
-    abortLocationUpdate("Invalid longitude parameter", callback);
-  }
-
-  if (!validateDistance(distance)) {
-    abortLocationUpdate("Invalid distance parameter", callback);
-  }
-
-  // If here, the validation was a success. *Martin Cheers*
-  return [true, distance, latitude, longitude];
-}
-
-// Function to validate latitude
-function validateLat(latitude) {
-  if(latitude == null) {
-    return false;
-  }
-
-  if(!longLatReg(latitude)) {
-    return false;
-  }
-
-  if(!checkLatRange(latitude)) {
-    return false;
-  }
-  return true;
-}
-
-// Function to validate longitude
-function validateLon(longitude) {
-  if(longitude == null) {
-    return false;
-  }
-
-  if(!longLatReg(longitude)) {
-    return false;
-  }
-
-  if(!checkLongRange(longitude)) {
-    return false;
-  }
-  return true;
-}
-
-// Function to validate distance
-function validateDistance(distance) {
-  if(distance == null) {
-    return false;
-  }
-
-  if (!(Number.isInteger(distance))){
-    return false;
-  }
-  return true;
-}
-
-// This function simply reports an error back to the client.
-function abortLocationUpdate(reason, callback) {
-  callback(null, {
-    "statusCode" : 200,
-    "headers" : { "Content-Type" : "application/json" },
-    "body" : JSON.stringify({
-      "status" : "error",
-      "message" : reason
-    })
-  });
-}
-
-// Works out the radius of LAT values to be accepted.
-function getRadiusLat(distance) {
-  var latChange = Math.abs(distance*(1/(110.574*1000)));
-  return latChange;
-}
-
-// Works out the radius of LON values to be accepted.
-function getRadiusLon(distance) {
-  var lonChange = Math.abs(distance*(1/(111.320*1000)));
-  return lonChange;
-}
-
-// Works out start position
-function getStartPos(cord, change) {
-  return cord - change;
-}
-
-// Works out end position
-function getEndPos(cord, change) {
-  return cord + change;
-}
-
-function expFrom(start, end) {
-  return Math.min(start,end);
-}
-
-function expTo(start, end) {
-  return Math.max(start,end);
-}
-
-// this is a function to check for a hexidecimal value and a length of 64 characters.
-function hexReg(s) {
-  var regExp = /[0-9A-Fa-f]{16}/g;
-  return (regExp.test(s));
-}
-
-// this function checks the latitude and lonitude follow the correct format.
-function longLatReg(regex) {
-  // regex for latitude and longitude.
-  var regExp = /(\-?\d+(\.\d+)?)/;
-  return regExp.test(regex);
-}
-
-//Ensures the latitude is within the domain of -90 degrees to 90 degrees
-function checkLatRange(latitude) {
-  if (latitude <= 90 && latitude >= -90) {
-    return true;
-  }
-  return false;
-}
-
-//Ensures the longitude is within the domain of -180 degrees to 180 degrees
-function checkLongRange(longitude) {
-  if (longitude <= 180 && longitude >= -180) {
-    return true;
-  }
-  return false;
-}
-
-//EXPORTS FOR USE IN TESTING
-module.exports.validateLat = validateLat;
-module.exports.validateLon = validateLon;
-module.exports.validateDistance = validateDistance;
-module.exports.getRadiusLat = getRadiusLat;
-module.exports.getRadiusLon = getRadiusLon;
-module.exports.getStartPos = getStartPos;
-module.exports.getEndPos = getEndPos;
-module.exports.expFrom = expFrom;
-module.exports.expTo = expTo;
-module.exports.hexReg = hexReg;
-module.exports.longLatReg = longLatReg;
-module.exports.checkLatRange = checkLatRange;
-module.exports.checkLongRange = checkLongRange;
-module.exports.abortLocationUpdate = abortLocationUpdate;
-module.exports.eventValidation = eventValidation
+// Module exports for each function to enable Mocha to test them.
+module.exports.validParameters = validParameters
+module.exports.wellFormedLatLong = wellFormedLatLong
+module.exports.validLatitude = validLatitude
+module.exports.validLongitude = validLongitude
+module.exports.validLatitudeRange = validLatitudeRange
+module.exports.validLongitudeRange = validLongitudeRange
