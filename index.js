@@ -32,7 +32,6 @@ exports.handler = (event, context, callback) => {
   // Retrieves items from the DB.
   var params = {
     TableName:"price_paid_data",
-    IndexName:"latitude-index",
 
     // What fields will be returned.
     ProjectionExpression: "latitude , longitude, price",
