@@ -88,7 +88,7 @@ function respond(items) {
         "body" : JSON.stringify(items)
         });
     }
-};
+}
 
 // This function simply reports an error back to the client.
 function abortLocationUpdate(reason, callback) {
