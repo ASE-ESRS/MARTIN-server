@@ -1,88 +1,66 @@
 /*
-
-This project uses the Mocha framework for unit testing.
-Travis CI runs all of the tests in the /tests directory when building.
-
+    This project uses the Mocha framework for unit testing.
+    Travis CI runs all of the tests in the /tests directory when building.
 */
 
 var assert = require('assert');
 var chai = require('chai');
-var myCode = require('./index.js');
+var martinServer = require('./index.js');
 
 describe('Input validation tests', function() {
-    // describe('UserID input validation tests', function() {
-    //   it('UserID test - testing a random 16 character ID', function() {
-    //     assert.equal(trued, myCode.userIdRegExValid("abcdef1111111111"));
-    //   });
-    //   it('UserID test - testing a random 10 character ID', function() {
-    //     assert.equal(false, myCode.userIdRegExValid("abcd234517"));
-    //   });
-    //   it('UserID test - testing a random 17 character ID', function() {
-    //     assert.equal(false, myCode.userIdRegExValid("abcdef1111111111746"));
-    //   });
-
-    //   it('UserID test - testing a random 16 character ID outside the domain of a-f', function() {
-    //     assert.equal(false, myCode.userIdRegExValid("hijklm1234567891"));
-    //   });
-
-    //   it('UserID test - testing a random ID outside the domain of digits and numbers', function() {
-    //     assert.equal(false, myCode.userIdRegExValid("//][``]"));
-    //   });
-    // });
-
-    describe('LongLatRegexFunction', function() {
-      it('LongLatRegExFunction test - check positive value', function() {
-        assert.equal(true, myCode.longLatReg(50.0));
+    describe('wellFormedLatLongFunction', function() {
+      it('wellFormedLatLongFunction test - check positive value', function() {
+        assert.equal(true, martinServer.wellFormedLatLong(50.0));
       });
 
-      it('LongLatRegExFunction test - check negative value', function() {
-        assert.equal(true, myCode.longLatReg(-200.983));
+      it('wellFormedLatLongFunction test - check negative value', function() {
+        assert.equal(true, martinServer.wellFormedLatLong(-200.983));
       });
 
-      it('LongLatRegExFunction test - 0 as a valid input', function() {
-        assert.equal(true, myCode.longLatReg(0));
+      it('wellFormedLatLongFunction test - 0 as a valid input', function() {
+        assert.equal(true, martinServer.wellFormedLatLong(0));
       });
 
-      it('LongLatRegExFunction test - test for strings', function() {
-        assert.equal(false, myCode.longLatReg("hello world"));
+      it('wellFormedLatLongFunction test - test for strings', function() {
+        assert.equal(false, martinServer.wellFormedLatLong("hello world"));
       });
     });
 
-    describe('Validate latitude conforms to its standard domain', function() {
+    describe('Validate latitude conforms to its standard domain (range)', function() {
       it('Latitude value is within range test - check boundary case (positive)', function() {
-        assert.equal(true, myCode.checkLatRange(90.000000));
+        assert.equal(true, martinServer.validLatitudeRange(90.000000));
       });
 
       it('Latitude value is within range test - check boundary case (negative)', function() {
-        assert.equal(true, myCode.checkLatRange(-90.000000));
+        assert.equal(true, martinServer.validLatitudeRange(-90.000000));
       });
 
       it('Latitude value is within range test - check boundary case (zero)', function() {
-        assert.equal(true, myCode.checkLatRange(0));
+        assert.equal(true, martinServer.validLatitudeRange(0));
       });
 
       it('Latitude value is within range test - check normal case', function() {
-        assert.equal(true, myCode.checkLatRange(14.647352));
+        assert.equal(true, martinServer.validLatitudeRange(14.647352));
       });
 
       it('Latitude value is within range test - check for string input', function() {
-        assert.equal(true, myCode.checkLatRange("9.754"));
+        assert.equal(true, martinServer.validLatitudeRange("9.754"));
       });
 
       it('Latitude value is NOT within range test - check for out of bounds case', function() {
-        assert.equal(false, myCode.checkLatRange(207.81));
+        assert.equal(false, martinServer.validLatitudeRange(207.81));
       });
 
       it('Latitude returns false when null parameter used', function() {
-        assert.equal(false, myCode.validateLat(null));
+        assert.equal(false, martinServer.validLatitudeRange(null));
       });
 
       it('Latitude syntax adhering to Regex Spec', function() {
-        assert.equal(true, myCode.validateLat(26.4));
+        assert.equal(true, martinServer.validLatitudeRange(26.4));
       });
 
       it('Latitude syntax not adhering to Regex Spec', function() {
-        assert.equal(false, myCode.validateLat("56.5-).3.89"));
+        assert.equal(false, martinServer.validLatitudeRange("56.5-).3.89"));
       });
 
     });
