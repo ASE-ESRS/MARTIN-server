@@ -87,7 +87,6 @@ function respond(items) {
         "headers" : { "Content-Type" : "application/json" },
         "body" : JSON.stringify(items)
         });
-    }
 }
 
 // This function simply reports an error back to the client.
