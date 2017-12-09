@@ -130,7 +130,7 @@ function eventValidation(e) {
         abortLocationUpdate("Null value at input", callback);
     }
 }
-
+}
 // this is a function to check for a hexidecimal value and a length of 64 characters.
 function hexReg(s) {
     var regExp = /[0-9A-Fa-f]{16}/g;
@@ -314,4 +314,3 @@ module.exports.checkLatRange = checkLatRange;
 module.exports.checkLongRange = checkLongRange;
 module.exports.abortLocationUpdate = abortLocationUpdate;
 module.exports.eventValidation = eventValidation
-}
