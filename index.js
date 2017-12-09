@@ -1,13 +1,16 @@
 // MARTIN-server
 
 // Get access to DynamoDB.
-var AWS = require("aws-sdk");
-var dynamoDB = new AWS.DynamoDB.DocumentClient();
+var AWS;
+var dynamoDB;
 
 // The callback function is accessed by the `abortLocationUpdate` and `returnResults` methods.
 var handler;
 
 exports.handler = (event, context, callback) => {
+    AWS = require("aws-sdk");
+    dynamoDB = new AWS.DynamoDB.DocumentClient();
+
     handler = callback;
 
     // Validate the input parameters
