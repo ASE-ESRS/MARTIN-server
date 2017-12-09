@@ -245,7 +245,7 @@ function getRadiusLat(distance) {
 }
 
 // Works out the radius of LON values to be accepted.
-function getRadiusLong(distance) {
+function getRadiusLon(distance) {
   var lonChange = Math.abs(distance*(1/(111.320*1000)));
   return lonChange;
 }
@@ -302,7 +302,7 @@ module.exports.validateLat = validateLat;
 module.exports.validateLon = validateLon;
 module.exports.validateDistance = validateDistance;
 module.exports.getRadiusLat = getRadiusLat;
-module.exports.getRadiusLong = getRadiusLong;
+module.exports.getRadiusLon = getRadiusLon;
 module.exports.getStartPos = getStartPos;
 module.exports.getEndPos = getEndPos;
 module.exports.expFrom = expFrom;
