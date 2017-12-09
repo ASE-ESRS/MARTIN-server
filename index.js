@@ -298,7 +298,6 @@ function checkLongRange(longitude) {
   return false;
 }
 
-}
 //EXPORTS FOR USE IN TESTING
 module.exports.validateLat = validateLat;
 module.exports.validateLon = validateLon;
@@ -315,3 +314,4 @@ module.exports.checkLatRange = checkLatRange;
 module.exports.checkLongRange = checkLongRange;
 module.exports.abortLocationUpdate = abortLocationUpdate;
 module.exports.eventValidation = eventValidation
+}
