@@ -67,77 +67,77 @@ describe('Input validation tests', function() {
 
     describe('Validate longitude conforms to normal convention', function(){
       it('Longitude value is within range test - check boundary case (positive)', function() {
-        assert.equal(true, myCode.checkLongRange(180.000000));
+        assert.equal(true, martinServer.checkLongRange(180.000000));
       });
 
       it('Longitude value is within range test - check boundary case (negative)', function() {
-        assert.equal(true, myCode.checkLongRange(-180.000000));
+        assert.equal(true, martinServer.checkLongRange(-180.000000));
       });
 
       it('Longitude value is within range test - check boundary case (zero)', function() {
-        assert.equal(true, myCode.checkLongRange(0));
+        assert.equal(true, martinServer.checkLongRange(0));
       });
 
       it('Longitude value is within range test - check normal case', function() {
-        assert.equal(true, myCode.checkLongRange(-87.647352));
+        assert.equal(true, martinServer.checkLongRange(-87.647352));
       });
 
       it('Longitude value is within range test - check for string input', function() {
-        assert.equal(true, myCode.checkLongRange("91.075"));
+        assert.equal(true, martinServer.checkLongRange("91.075"));
       });
 
       it('Longitude value is NOT within range test - check for out of bounds case', function() {
-        assert.deepEqual(false, myCode.checkLongRange(-196.856));
+        assert.deepEqual(false, martinServer.checkLongRange(-196.856));
       });
 
       it('Longitude returns false when null parameter used', function() {
-        assert.equal(false, myCode.validateLon(null));
+        assert.equal(false, martinServer.validateLon(null));
       });
 
       it('Longitude syntax adhering to Regex Spec', function() {
-        assert.equal(true, myCode.validateLon(76.901));
+        assert.equal(true, martinServer.validateLon(76.901));
       });
 
       it('Longitude syntax not adhering to Regex Spec', function() {
-        assert.equal(false, myCode.validateLon("1.34.2.&"));
+        assert.equal(false, martinServer.validateLon("1.34.2.&"));
       });
     });
 
     describe('validateDistance only accepting valid distances', function(){
       it('Distance returns false when null parameter used', function() {
-        assert.equal(false, myCode.validateDistance(null));
+        assert.equal(false, martinServer.validateDistance(null));
       });
 
       it('Distance returns false when non-integer parameter used (decimal)', function() {
-        assert.equal(false, myCode.validateDistance(100.00004));
+        assert.equal(false, martinServer.validateDistance(100.00004));
       });
 
       it('Distance returns true wheninteger parameter used', function() {
-        assert.equal(true, myCode.validateDistance(74));
+        assert.equal(true, martinServer.validateDistance(74));
       });
     });
 
     describe('Caluclate radius from current location', function() {
       it('Check latitude calculation is correct', function() {
         var latChange = Math.abs(15*(1/(110.574*1000)));
-        assert.equal(latChange, myCode.getRadiusLat(15));
+        assert.equal(latChange, martinServer.getRadiusLat(15));
       });
 
       it('Check latitude calculation for incorrect input', function() {
         var distance = 5;
         var latChange = Math.abs(distance*(1/(110.574*1000)));
-        assert.notEqual(latChange, myCode.getRadiusLat(8));
+        assert.notEqual(latChange, martinServer.getRadiusLat(8));
       });
 
       it('Check longitude calculation is correct', function() {
         var lonChange = Math.abs(34*(1/(111.320*1000)));
-        assert.equal(lonChange, myCode.getRadiusLon(34));
+        assert.equal(lonChange, martinServer.getRadiusLon(34));
       });
 
       it('Check longitude calculation for incorrect input', function() {
         var distance = 11;
         var lonChange = Math.abs(distance*(1/(110.574*1000)));
-        assert.notEqual(lonChange, myCode.getRadiusLon(98));
+        assert.notEqual(lonChange, martinServer.getRadiusLon(98));
       });
     });
 
@@ -145,37 +145,37 @@ describe('Input validation tests', function() {
       it('Check start position calculation - correct input', function() {
         var startPos = 5;
         var change = 17;
-        assert.equal((startPos-change), myCode.getStartPos(startPos, change));
+        assert.equal((startPos-change), martinServer.getStartPos(startPos, change));
       });
 
       it('Check start position calculation - incorrect input', function() {
         var startPos = 5;
         var change = 17;
-        assert.notEqual((startPos+2-change-8), myCode.getStartPos(startPos, change));
+        assert.notEqual((startPos+2-change-8), martinServer.getStartPos(startPos, change));
       });
 
       it('Check end position calculation - correct input', function() {
         var endPos = 14;
         var change = 9;
-        assert.equal((endPos+change), myCode.getEndPos(endPos, change));
+        assert.equal((endPos+change), martinServer.getEndPos(endPos, change));
       });
 
       it('Check end position calculation - incorrect input', function() {
         var endPos = 14;
         var change = 9;
-        assert.notEqual((endPos+81+change-9), myCode.getEndPos(endPos, change));
+        assert.notEqual((endPos+81+change-9), martinServer.getEndPos(endPos, change));
       });
 
       it('Ensure correct minimum value extracted - expFrom', function() {
         var a = 1000;
         var b = 78.192;
-        assert.equal(Math.min(a,b), myCode.expFrom(a,b));
+        assert.equal(Math.min(a,b), martinServer.expFrom(a,b));
       });
 
       it('Ensure correct maximum value extracted - expTo', function() {
         var a = 563;
         var b = 129;
-        assert.equal(Math.max(a,b), myCode.expTo(a,b));
+        assert.equal(Math.max(a,b), martinServer.expTo(a,b));
       });
 
 

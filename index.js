@@ -184,4 +184,7 @@ function abortLocationUpdate(reason) {
 }
 
 // Module exports for each function to enable Mocha to test them.
+module.exports.wellFormedLatLong = wellFormedLatLong
+
+module.exports.validLatitudeRange = validLatitudeRange
 module.exports.validLongitudeRange = validLongitudeRange
