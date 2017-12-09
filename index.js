@@ -298,20 +298,20 @@ function checkLongRange(longitude) {
   return false;
 }
 
-	//EXPORTS FOR USE IN TESTING
-	module.exports.validateLat = validateLat;
-	module.exports.validateLon = validateLon;
-	module.exports.validateDistance = validateDistance;
-	module.exports.getRadiusLat = getRadiusLat;
-	module.exports.getRadiusLong = getRadiusLong;
-	module.exports.getStartPos = getStartPos;
-	module.exports.getEndPos = getEndPos;
-	module.exports.expFrom = expFrom;
-	module.exports.expTo = expTo;
-	module.exports.hexReg = hexReg;
-	module.exports.longLatReg = longLatReg;
-	module.exports.checkLatRange = checkLatRange;
-	module.exports.checkLongRange = checkLongRange;
-	module.exports.abortLocationUpdate = abortLocationUpdate;
-	module.exports.eventValidation = eventValidation
 }
+//EXPORTS FOR USE IN TESTING
+module.exports.validateLat = validateLat;
+module.exports.validateLon = validateLon;
+module.exports.validateDistance = validateDistance;
+module.exports.getRadiusLat = getRadiusLat;
+module.exports.getRadiusLong = getRadiusLong;
+module.exports.getStartPos = getStartPos;
+module.exports.getEndPos = getEndPos;
+module.exports.expFrom = expFrom;
+module.exports.expTo = expTo;
+module.exports.hexReg = hexReg;
+module.exports.longLatReg = longLatReg;
+module.exports.checkLatRange = checkLatRange;
+module.exports.checkLongRange = checkLongRange;
+module.exports.abortLocationUpdate = abortLocationUpdate;
+module.exports.eventValidation = eventValidation
