@@ -32,16 +32,14 @@ exports.handler = (event, context, callback) => {
   // Retrieves items from the DB.
   var params = {
     TableName:"price_paid_data",
+    IndexName:"latitude-index",
 
     // What fields will be returned.
     ProjectionExpression: "latitude , longitude, price",
 
     // Filter the items to only include LAT/LON within the radius.
-    FilterExpression: "#latitude BETWEEN :latFrom AND :latTo and #longitude BETWEEN :lonFrom AND :lonTo",
-    ExpressionAttributeNames: {
-      "#latitude": "latitude",
-      "#longitude": "longitude"
-    },
+    FilterExpression: "latitude BETWEEN :latFrom AND :latTo and longitude BETWEEN :lonFrom AND :lonTo",
+
     ExpressionAttributeValues: {
       ":latFrom" :  explf, //Math.max / Math.min to account for negatice numbers and avoid an error with the between comparison.
       ":latTo"   :  explt,
@@ -64,13 +62,11 @@ function onScan(err,result) {
     respond({"status" : "error", "message" : "Dynamo DB error: "+err});
   } else {
     items = items.concat(result.Items);
-    console.log(JSON.stringify(result));
 
     if(typeof result.LastEvaluatedKey != "undefined") {
       params.ExclusiveStartKey = result.LastEvaluatedKey;
       docClient.scan(params, onScan);
     } else {
-      console.log("Items: " + items);
       stop = true;
       //callback(err,items);
       respond(items);
@@ -155,7 +151,7 @@ function checkLatRange(latitude) {
 function checkLongRange(longitude) {
   if (longitude <= 180 && longitude >= -180) {
     return true;
-  } 
+  }
   return false;
 }
 
