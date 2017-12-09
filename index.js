@@ -56,36 +56,112 @@ exports.handler = (event, context, callback) => {
   var stop = false;
 
   docClient.scan(params, onScan);
-  // Accounts for DynamoDB only being able to send a set window at a time, scans whole DB.
-  function onScan(err,result) {
-    if(err) {
-      console.log(err);
-      respond({"status" : "error", "message" : "Dynamo DB error: "+err});
-    } else {
-      items = items.concat(result.Items);
-      console.log(JSON.stringify(result));
+  
+}
 
-      if(typeof result.LastEvaluatedKey != "undefined") {
-        params.ExclusiveStartKey = result.LastEvaluatedKey;
-        docClient.scan(params, onScan);
-      } else {
-        console.log("Items: " + items);
-        stop = true;
-        //callback(err,items);
-        respond(items);
-        //return;
-      }
+// Accounts for DynamoDB only being able to send a set window at a time, scans whole DB.
+function onScan(err,result) {
+  if(err) {
+    console.log(err);
+    respond({"status" : "error", "message" : "Dynamo DB error: "+err});
+  } else {
+    items = items.concat(result.Items);
+    console.log(JSON.stringify(result));
+
+    if(typeof result.LastEvaluatedKey != "undefined") {
+      params.ExclusiveStartKey = result.LastEvaluatedKey;
+      docClient.scan(params, onScan);
+    } else {
+      console.log("Items: " + items);
+      stop = true;
+      //callback(err,items);
+      respond(items);
+      //return;
     }
   }
+}
 
-  exports.respond = function(items) {
+function respond(items) {
     callback(null, {
-      "statusCode" : 200,
-      "headers" : { "Content-Type" : "application/json" },
-      "body" : JSON.stringify(items)
-    });
-  }
+        "statusCode" : 200,
+        "headers" : { "Content-Type" : "application/json" },
+        "body" : JSON.stringify(items)
+        });
+    }
 };
+
+// This function simply reports an error back to the client.
+function abortLocationUpdate(reason, callback) {
+    callback(null, {
+        "statusCode" : 200,
+        "headers" : { "Content-Type" : "application/json" },
+        "body" : JSON.stringify({
+            "status" : "error",
+            "message" : reason
+        })
+    });
+}
+
+// This is a function to perform input validation on the inputs in event.
+function eventValidation(e) {
+    let event = e;
+    var latitude = parseFloat(event.queryStringParameters.latitude);
+    var longitude = parseFloat(event.queryStringParameters.longitude);
+    var distance = parseInt(event.queryStringParameters.distance);
+
+    if (!(distance === null || latitude === null || longitude === null)) {
+
+        // Extract the userId parameter and validate.
+        if (!(Number.isInteger(distance))){
+            abortLocationUpdate("Invalid distance", callback);
+        }
+
+        // Extract the `latitude` parameter and validate.
+        if(!(longLatReg(latitude)) && !(checkLatRange(latitude))) {
+            abortLocationUpdate("Invalid latitude parameter", callback);
+        }
+
+        // Extract the `longitude` parameter and validate.
+        if(!(longLatReg(longitude)) && !(checkLongRange(longitude))) {
+            abortLocationUpdate("Invalid longitude parameter", callback);
+        }
+
+        // If here, the validation was a success. *Martin Cheers*
+        return [true, distance, latitude, longitude];
+
+    } else {
+        abortLocationUpdate("Null value at input", callback);
+    }
+}
+
+// this is a function to check for a hexidecimal value and a length of 64 characters.
+function hexReg(s) {
+    var regExp = /[0-9A-Fa-f]{16}/g;
+    return (regExp.test(s));
+}
+
+// this function checks the latitude and lonitude follow the correct format.
+function longLatReg(regex) {
+    // regex for latitude and longitude.
+    var regExp = /(\-?\d+(\.\d+)?)/;
+    return regExp.test(regex);
+}
+
+//Ensures the latitude is within the domain of -90 degrees to 90 degrees
+function checkLatRange(latitude) {
+  if (latitude <= 90 && latitude >= -90) {
+    return true;
+  }
+  return false;
+}
+
+//Ensures the longitude is within the domain of -180 degrees to 180 degrees
+function checkLongRange(longitude) {
+  if (longitude <= 180 && longitude >= -180) {
+    return true;
+  } 
+  return false;
+}
 
 // This is a function to perform input validation on the inputs in event.
 function eventValidation(event) {
