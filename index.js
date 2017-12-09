@@ -98,7 +98,7 @@ function abortLocationUpdate(reason, callback) {
         })
     });
 }
-
+}
 // This is a function to perform input validation on the inputs in event.
 function eventValidation(e) {
     let event = e;
@@ -129,7 +129,6 @@ function eventValidation(e) {
     } else {
         abortLocationUpdate("Null value at input", callback);
     }
-}
 }
 // this is a function to check for a hexidecimal value and a length of 64 characters.
 function hexReg(s) {
