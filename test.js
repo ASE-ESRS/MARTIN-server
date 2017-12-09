@@ -153,13 +153,13 @@ describe('Input validation tests', function() {
 
       it('Check longitude calculation is correct', function() {
         var lonChange = Math.abs(34*(1/(111.320*1000)));
-        assert.equal(lonChange, myCode.getRadiusLong(34));
+        assert.equal(lonChange, myCode.getRadiusLon(34));
       });
 
       it('Check longitude calculation for incorrect input', function() {
         var distance = 11;
         var lonChange = Math.abs(distance*(1/(110.574*1000)));
-        assert.notEqual(lonChange, myCode.getRadiusLong(98));
+        assert.notEqual(lonChange, myCode.getRadiusLon(98));
       });
     });
 
