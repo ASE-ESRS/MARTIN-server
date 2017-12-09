@@ -102,4 +102,10 @@ describe('Input validation tests', function() {
             assert.equal(false, martinServer.validLongitudeRange("1.34.2.&"));
         });
     });
+
+    describe('Ensure the parameter validation function works correctly — this ties together a number of different other functions', function(){
+        it('Valid inputs check', function() {
+            assert.equal(true, martinServer.validParameters("50.77504482670429", "50.95591917329571", "-0.1749249174991017", "0.004737317499101695"));
+        });
+    });
 });
