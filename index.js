@@ -29,6 +29,9 @@ exports.handler = (event, context, callback) => {
     // Validate the input parameters
     let validatedParameters = extractParametersFromEvent(event);
 
+    // Ensure the parameters were valid, otherwise abort.
+    if (typeof validatedParameters == "undefined") { return }
+
     let start_latitude = validatedParameters.start_latitude;
     let end_latitude = validatedParameters.end_latitude;
     let start_longitude = validatedParameters.start_longitude;
@@ -111,24 +114,28 @@ function extractParametersFromEvent(event) {
 function validParameters(start_latitude, end_latitude, start_longitude, end_longitude) {
     // Validate the `start_latitude` parameter.
     if (validLatitude(start_latitude) == false) {
+        log.endLogEntryWithFailureReason(requestLogID, "Invalid start_latitude parameter");
         abortLocationUpdate("Invalid start_latitude parameter");
         return false;
     }
 
     // Validate the `end_latitude` parameter.
     if (validLatitude(end_latitude) == false) {
+        log.endLogEntryWithFailureReason(requestLogID, "Invalid end_latitude parameter");
         abortLocationUpdate("Invalid end_latitude parameter");
         return false;
     }
 
     // Validate the `start_longitude` parameter.
     if (validLongitude(start_longitude) == false) {
+        log.endLogEntryWithFailureReason(requestLogID, "Invalid start_longitude parameter");
         abortLocationUpdate("Invalid start_longitude parameter");
         return false;
     }
 
     // Validate the `end_longitude` parameter.
     if (validLongitude(end_longitude) == false) {
+        log.endLogEntryWithFailureReason(requestLogID, "Invalid end_longitude parameter");
         abortLocationUpdate("Invalid end_longitude parameter");
         return false;
     }
