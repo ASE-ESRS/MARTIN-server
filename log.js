@@ -1,11 +1,14 @@
 // Get a reference to DynamoDB
-var AWS = require("aws-sdk");
-dynamoDB = new AWS.DynamoDB.DocumentClient();
+var AWS;
+var dynamoDB;
 
 // Name of the request_logs table in DynamoDB.
 let k_TABLE_NAME = "request_logs";
 
 function createLogEntry(requestLogID) {
+    AWS = require("aws-sdk");
+    dynamoDB = new AWS.DynamoDB.DocumentClient();
+
     var requestLogItem = {
         requestLogID    : requestLogID,
         successful      : false,
