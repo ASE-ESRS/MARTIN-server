@@ -1,7 +1,7 @@
 // MARTIN-server
 
 // Get a reference to the logging functions.
-var log = require('./log.js');
+const log = require('./log.js');
 
 // The ID used to uniquely identify to the log of this request (used by `log.js`).
 var requestLogID;
@@ -16,9 +16,9 @@ var handler;
 exports.handler = (event, context, callback) => {
     // Begin the log entry for this request.
 
-    // The `shortid` library is used to generate unique strings.
-    var shortid = require('shortid');
-    requestLogID = shortid.generate();
+    // The `uuid` library is used to generate unique strings.
+    const uuid = require('uuid/v4');
+    requestLogID = uuid();
     log.createLogEntry(requestLogID);
 
     AWS = require("aws-sdk");
