@@ -4,17 +4,12 @@
 var AWS;
 var dynamoDB;
 
-// Get a reference to the logging functions.
-var log = require('./log.js');
-
 // The callback function is accessed by the `abortLocationUpdate` and `returnResults` methods.
 var handler;
 
 exports.handler = (event, context, callback) => {
     AWS = require("aws-sdk");
     dynamoDB = new AWS.DynamoDB.DocumentClient();
-
-    log.logEntry("Test 1");
 
     handler = callback;
 
