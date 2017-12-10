@@ -1,20 +1,28 @@
 // MARTIN-server
 
-// Get access to DynamoDB.
-var AWS;
-var dynamoDB;
-
 // Get a reference to the logging functions.
 var log = require('./log.js');
+
+// The ID used to uniquely identify to the log of this request (used by `log.js`).
+var requestLogID;
+
+// Access to DynamoDB.
+var AWS;
+var dynamoDB;
 
 // The callback function is accessed by the `abortLocationUpdate` and `returnResults` methods.
 var handler;
 
 exports.handler = (event, context, callback) => {
+    // Begin the log entry for this request.
+
+    // The `shortid` library is used to generate unique strings.
+    var shortid = require('shortid');
+    requestLogID = shortid.generate();
+    log.createLogEntry(requestLogID);
+
     AWS = require("aws-sdk");
     dynamoDB = new AWS.DynamoDB.DocumentClient();
-
-    log.logEntry("Test 1");
 
     handler = callback;
 
@@ -25,6 +33,8 @@ exports.handler = (event, context, callback) => {
     let end_latitude = validatedParameters.end_latitude;
     let start_longitude = validatedParameters.start_longitude;
     let end_longitude = validatedParameters.end_longitude;
+
+    log.updateLogEntry(requestLogID, start_latitude, end_latitude, start_longitude, end_longitude);
 
     // Set up the parameters to use to scan the database.
     scanParameters = {
@@ -76,6 +86,8 @@ function returnResults(items) {
         "headers" : { "Content-Type" : "application/json" },
         "body" : JSON.stringify(items)
     });
+
+    log.endLogEntryWithSuccess(requestLogID);
 }
 
 // Extracts parameters from the event and invokes methods to validate them.
