@@ -54,7 +54,21 @@ describe('Input validation tests', function() {
         it('Latitude returns false when null parameter used', function() {
             assert.equal(false, martinServer.validLatitude(null));
         });
+        //--------
 
+        it('Latitude returns true when given a valid parameter (boundary case)', function() {
+            assert.equal(true, martinServer.validLatitude(90));
+        });
+
+        it('Latitude returns false when given a parameter which does not pass the RegEx specification', function() {
+            assert.equal(false, martinServer.validLatitude("12.8s91"));
+        });
+
+        it('Latitude returns false on an exception case (out of bounds)', function() {
+            assert.equal(false, martinServer.validLatitude(90.00001));
+        });
+
+        //----------
         it('Latitude syntax adhering to Regex Spec', function() {
             assert.equal(true, martinServer.validLatitudeRange(26.4));
         });
