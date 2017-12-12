@@ -81,7 +81,7 @@ describe('Input validation tests', function() {
         });
 
         it('Longitude returns false on an exception case (out of bounds)', function() {
-            assert.equal(false, martinServer.validLongitude(18.00001));
+            assert.equal(false, martinServer.validLongitude(180.00001));
         });
 
         it('TESTTESTTEST', function() {
