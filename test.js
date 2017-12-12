@@ -73,19 +73,19 @@ describe('Input validation tests', function() {
         });
 
         it('Longitude returns true when given a valid parameter (boundary case)', function() {
-            assert.equal(true, martinServer.validLatitude(-180));
+            assert.equal(true, martinServer.validLongitude(-180));
         });
 
         it('Longitude returns false when given a parameter which does not pass the RegEx specification', function() {
-            assert.equal(false, martinServer.validLatitude("81.abc"));
+            assert.equal(false, martinServer.validLongitude("81.abc"));
         });
 
         it('Longitude returns false on an exception case (out of bounds)', function() {
-            assert.equal(false, martinServer.validLatitude(18.00001));
+            assert.equal(false, martinServer.validLongitude(18.00001));
         });
 
         it('TESTTESTTEST', function() {
-            assert.equal(false, martinServer.validLatitude("ABCDEFG"));
+            assert.equal(false, martinServer.validLongitude("WXYZ"));
         });
 
         //----------
