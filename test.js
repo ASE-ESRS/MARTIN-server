@@ -68,6 +68,26 @@ describe('Input validation tests', function() {
             assert.equal(false, martinServer.validLatitude(90.00001));
         });
 
+        it('TESTTESTTEST', function() {
+            assert.equal(false, martinServer.validLatitude("ABCDEFG"));
+        });
+
+        it('Longitude returns true when given a valid parameter (boundary case)', function() {
+            assert.equal(true, martinServer.validLatitude(-180));
+        });
+
+        it('Longitude returns false when given a parameter which does not pass the RegEx specification', function() {
+            assert.equal(false, martinServer.validLatitude("81.abc"));
+        });
+
+        it('Longitude returns false on an exception case (out of bounds)', function() {
+            assert.equal(false, martinServer.validLatitude(18.00001));
+        });
+
+        it('TESTTESTTEST', function() {
+            assert.equal(false, martinServer.validLatitude("ABCDEFG"));
+        });
+
         //----------
         it('Latitude syntax adhering to Regex Spec', function() {
             assert.equal(true, martinServer.validLatitudeRange(26.4));
